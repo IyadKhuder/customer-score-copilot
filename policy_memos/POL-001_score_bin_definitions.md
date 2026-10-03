@@ -1,0 +1,3 @@
+# POL-001 — Score Bin Definitions
+
+Behavioral scores are grouped into nine bins (1–9). A higher score maps to a higher bin, and a higher bin represents lower risk: Bin 9 is the lowest-risk bin and Bin 1 the highest-risk bin. Bins 7–9 are classified as "Prime," Bins 4–6 as "Standard," and Bins 1–3 as "Sub-standard/Watch." An upward migration (to a higher-numbered bin) is an improvement; a downward migration (to a lower-numbered bin, e.g., 7→6) is a deterioration. A migration between adjacent bins reflects a meaningful shift in underlying risk and should be treated as a materially different risk profile, not noise. Migrations spanning two or more bins in a single period are considered severe and require review regardless of direction.

@@ -1,0 +1,30 @@
+# Secrets and local environment configuration
+.env
+
+# Python virtual environment
+venv/
+
+# Python-generated files
+__pycache__/
+*.py[cod]
+
+# PyCharm / JetBrains IDE files
+.idea/
+
+# Jupyter temporary files
+.ipynb_checkpoints/
+
+# Local auxiliary / scratch files
+var/
+
+# Original data sample
+data/scores.csv
+
+# Auxiliary output files
+outputs/vectorizer.txt
+
+# SQLite generated database
+data/scores.db
+
+# Private data-generation utility
+src/generate_synthetic.py
