@@ -9,9 +9,14 @@ load_dotenv()
 PROVIDERS = {
     "gemini": {
         "adapter": "openai_compatible",
-        "model": "gemini-3.6-flash",
+        "model": "gemini-3.5-flash-lite",
         "base_url": "https://generativelanguage.googleapis.com/v1beta/openai/",
         "api_key_env": "GEMINI_API_KEY",
+    },
+    "anthropic": {
+        "adapter": "anthropic",
+        "model": "claude-haiku-5-5",
+        "api_key_env": "ANTHROPIC_API_KEY",
     },
 }
 

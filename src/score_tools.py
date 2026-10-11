@@ -73,7 +73,40 @@ def compute_trend(account_id: int) -> Optional[dict]:
         return None
 
     scores = [row["score"] for row in history]
+    last_6_volatility = (
+        round(statistics.pstdev(scores[-6:]), 2)
+        if len(scores) >= 6
+        else None
+    )
     migrations = get_migrations(account_id)
+
+    # Detect consecutive month-over-month score declines.
+    decline_streaks = []
+    decline_count = 0
+    streak_start = None
+
+    for previous, current in zip(history, history[1:]):
+        if current["score"] < previous["score"]:
+            if decline_count == 0:
+                streak_start = previous["period"]
+            decline_count += 1
+
+        else:
+            if decline_count > 0:
+                decline_streaks.append({
+                    "start_period": streak_start,
+                    "end_period": previous["period"],
+                    "n_declines": decline_count,
+                })
+            decline_count = 0
+
+    # Capture a streak that continues through the last record.
+    if decline_count > 0:
+        decline_streaks.append({
+            "start_period": streak_start,
+            "end_period": history[-1]["period"],
+            "n_declines": decline_count,
+        })
 
     # Sum of |bin change| across every migration: distinguishes a big single
     # jump (e.g. 6->9) from several small back-and-forth ones (e.g. 6->7->6),
@@ -98,6 +131,15 @@ def compute_trend(account_id: int) -> Optional[dict]:
         "n_bin_migrations": len(migrations),
         "bin_migration_magnitude": bin_migration_magnitude,
         "net_bin_change": net_bin_change,
+        "volatility_last_6_stdev": last_6_volatility,
+        "latest_consecutive_declines": decline_count,
+        "longest_consecutive_declines": max(
+            (s["n_declines"] for s in decline_streaks),
+            default=0,
+        ),
+        "decline_streaks": [
+            s for s in decline_streaks if s["n_declines"] >= 3
+        ],
     }
 
 
@@ -230,9 +272,13 @@ TOOL_SCHEMAS = [
     {
         "name": "compute_trend",
         "description": (
-            "Get summary trend stats for a customer: net score change, volatility, "
+            "Get summary trend stats for a customer: "
+            "net score change, volatility, "
             "min/max score, number of bin migrations, total bin-migration magnitude, "
-            "and net bin change from start to end."
+            " net bin change from start to end, "
+            "the last-six-period standard deviation, which is added to mitigate a relevant inaccuracy, "
+            "the longest consecutive score declines and dated decline streaks of 3+ months, "
+            "and Number of consecutive declines ending at the latest observed period."
         ),
         "input_schema": {
             "type": "object",

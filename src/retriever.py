@@ -21,6 +21,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 import re
 from nltk.stem import PorterStemmer
 import numpy as np, math
+import os
+from dotenv import load_dotenv
 
 _stemmer = PorterStemmer()
 _token_pattern = re.compile(r"(?u)\b\w\w+\b")
@@ -34,7 +36,36 @@ def stemming_tokenizer(text: str) -> list[str]:
     return [_stemmer.stem(t) for t in tokens if t not in ENGLISH_STOP_WORDS_SET]
 
 
-POLICY_DIR = "policy_memos"
+# Policy version is selected once, at process startup. Restart Python to switch.
+# Read environment variables from .env.
+load_dotenv()
+
+# Absolute path to the project root (parent of src/).
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+# Select the policy knowledge-base version.
+POLICY_VERSION = os.getenv("POLICY_VERSION", "v1.0").strip()
+
+POLICY_DIRS = {
+    "v1.0": PROJECT_ROOT / "policy_memos",
+    "v1.1": PROJECT_ROOT / "module_4_10_v1_1_experiment" / "policy_memos",
+}
+
+# Validate the selected version.
+if POLICY_VERSION not in POLICY_DIRS:
+    raise ValueError(
+        f"Unsupported POLICY_VERSION={POLICY_VERSION!r}. "
+        f"Choose one of: {', '.join(POLICY_DIRS)}"
+    )
+
+POLICY_DIR = POLICY_DIRS[POLICY_VERSION]
+
+# Fail immediately if the selected folder is missing.
+if not POLICY_DIR.is_dir():
+    raise FileNotFoundError(
+        f"Policy folder for {POLICY_VERSION} not found: {POLICY_DIR}. "
+        "Check where you extracted the ZIP file."
+    )
 
 
 def _chunk_markdown(text: str, source: str) -> list[dict]:
