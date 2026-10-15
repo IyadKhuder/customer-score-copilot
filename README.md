@@ -34,6 +34,14 @@ flowchart LR
 
 **Design rule:** facts from tools; policy context from retrieval; prose from the model. The final step remains fallible: collecting evidence does **not** prove that the model uses it correctly.
 
+### Chronological workflow
+
+The architecture above shows **which components interact**; the sequence diagram below shows **the order in which they interact** during an illustrative agent run. Time flows **from top to bottom**: the agent sends the question to the selected LLM, executes requested score and policy tools, returns the retrieved evidence to the model, and delivers its response. Tool calls can be batched or repeated, so the exact sequence varies by question and model.
+
+![Chronological workflow sequence diagram](docs/assets/chronological-workflow.png)
+
+For an editable Mermaid version and more detail, see [Architecture](docs/architecture.md).
+
 ## What works today
 
 | Layer | Implemented capability |
