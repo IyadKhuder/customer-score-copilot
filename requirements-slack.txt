@@ -1,0 +1,3 @@
+# Optional local Slack interface, including the runtime.
+-r requirements.txt
+slack-bolt==1.29.0

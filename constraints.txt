@@ -1,0 +1,46 @@
+# Module 9.1 resolved dependency versions, 23 October 2026.
+# Shared by runtime, Slack and tests; this file does not install packages.
+# Target interpreters: CPython 3.11 and 3.12. Not a hash-locked supply-chain manifest.
+annotated-types==0.8.0
+anthropic==1.13.0
+anyio==4.15.1
+attrs==26.1.0
+click==8.5.0
+cloudpickle==3.1.2
+defusedxml==0.7.1
+docstring_parser==0.18.0
+h11==0.16.0
+httpcore2==2.16.0
+httpx2==2.16.0
+idna==3.20
+iniconfig==2.3.1
+jiter==0.17.0
+joblib==1.6.0
+narwhals==2.27.1
+nltk==3.10.3
+numpy==2.4.6
+openai==3.24.0
+packaging==26.3
+pandas==3.0.6
+pluggy==1.7.0
+pydantic==2.14.1
+pydantic_core==2.50.1
+Pygments==2.21.0
+pytest==8.4.2
+pytest-subtests==0.14.2
+python-dateutil==3.0.0
+python-dotenv==1.2.4
+regex==2026.9.29
+scikit-learn==1.9.1
+scipy==1.17.1
+six==1.17.0
+slack_bolt==1.29.0
+slack_sdk==3.45.0
+sniffio==1.3.1
+threadpoolctl==3.7.0
+tqdm==4.70.1
+truststore==0.10.5
+typing-inspection==0.4.4
+typing_extensions==4.16.0
+tzdata==2026.5
+colorama==0.4.6; sys_platform == "win32"

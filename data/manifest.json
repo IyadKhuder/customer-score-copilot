@@ -1,0 +1,80 @@
+{
+  "accounts": 72,
+  "anchor_version": "synthetic-anchors-1",
+  "as_of_period": "1991-12-01",
+  "bin_rule": "1 + score // 50",
+  "configuration": {
+    "accounts_per_market": 24,
+    "months": 24,
+    "new_market_months": 12,
+    "seed": 1729,
+    "start_period": "1990-01-01"
+  },
+  "files_sha256": {
+    "scenarios.json": "e163f6267ca78d1e1fd7527b2ef67e8b81ea978c1ef8ab877fe3a33d24f8d286",
+    "scores_extended.csv": "92059166ee2927f1bc1f35f64ae0ae009abaef864a93c8185cba8e50f1ef9cc4"
+  },
+  "generator_version": "synthetic-generator-1",
+  "kind_counts": {
+    "anchor": 33,
+    "background": 39
+  },
+  "mapping_version": "demo-bins-1",
+  "market_metadata": {
+    "1": {
+      "last_exception_review_period": null,
+      "site_onboarded_period": "1989-12-01"
+    },
+    "2": {
+      "last_exception_review_period": null,
+      "site_onboarded_period": "1989-12-01"
+    },
+    "3": {
+      "last_exception_review_period": "1991-10-01",
+      "site_onboarded_period": "1991-01-01"
+    }
+  },
+  "markets": {
+    "1": {
+      "accounts": 24,
+      "rows": 552
+    },
+    "2": {
+      "accounts": 24,
+      "rows": 552
+    },
+    "3": {
+      "accounts": 24,
+      "rows": 276
+    }
+  },
+  "omitted_rows": 60,
+  "policy_provenance": "Owner confirmed all demonstration policy memos and thresholds independently invented (2026-10-23).",
+  "policy_scope": "No policy corpus loaded or changed; v1.0/v1.1 remain separate. No policy outcomes asserted.",
+  "provenance": "Independently authored fictional scenarios; no workplace-data inputs or fitted parameters.",
+  "rows": 1380,
+  "scenario_counts": {
+    "data_quality": 6,
+    "declining": 9,
+    "improving": 9,
+    "missing_interior": 3,
+    "missing_latest": 3,
+    "recovery": 9,
+    "severe_drop": 6,
+    "short_history": 3,
+    "stable": 9,
+    "sudden_drop": 9,
+    "volatile": 6
+  },
+  "scheduled_rows": 1440,
+  "schema_version": 1,
+  "score_range_inclusive": [
+    0,
+    449
+  ],
+  "source_sha256": {
+    "synthetic_dataset.py": "47fa1ff65c49bf3f9dc1bf6ec4f92d27c4b5a6a65f5020fbb94a41f5f563bd05",
+    "synthetic_foundations.py": "c9d5ecc248a2f00cfbf2ee6ee08103c2977ca995950c7560f7422a5dd6b946e8"
+  },
+  "stream_version": "sha256-counter-modulo-1"
+}

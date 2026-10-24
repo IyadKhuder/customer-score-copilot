@@ -1,0 +1,892 @@
+{
+  "audit_limit": "No literal four-score overlap candidate remains in the private screen; not a universal provenance proof.",
+  "candidate_id": "synthetic-candidate-1",
+  "critical_source_byte_identity": {
+    "batch_notes.py": "2ea987ebad53ff69ae8a5b71f562243cd1b10ef7b6aa5835d6ab3ed540329855",
+    "batch_scan.py": "b77be95db918d30acfd955e7299cd0c1e911ebb4a1753c27c071272e178e40f5",
+    "guardrail.py": "aede35c288398f18feded1d2a65c3334d997dc5ddc7a4a0e9943db284ed37b05",
+    "llm_client.py": "e2a1535c1b84364932c439ff4e3b199cbf94b40e807b16f42be94093954ea2fc",
+    "policy_claim_guard.py": "deed2ecfdcc42f7ef7064376f5fa710869159b3b015b1e599cce89def63fe301",
+    "policy_decisions.py": "11ce748d9a12599da00a5fd51ca2a15c9f356777fe3595324f4a90860e2954d6",
+    "request_budget.py": "ddc6c06318b470547ccfdf46a706dea16f792231b086bfe7a51b3244bdc546bd",
+    "response_gate.py": "0f4de4a5a2a7e0ba4cd38aafe0ba163ffb9d04857dd2093433099d942befe136",
+    "slack_listener.py": "1d621383a3eaeacfd024a533d1d400adaa49af0294a1b2faccc228afbfca21d9",
+    "structured_output.py": "4048eea90a078518d54946fdfb62f62996a5efe7ba165051ea9e1efab60d184c",
+    "temporal_policy.py": "2d821743972bb59f066f46ef7cb5bd4c170f799b451303b7624f377b04e07322",
+    "verification_pipeline.py": "be8fcc1ad52423397cf9da1aa6e4402e4801cb72c4fc3d454a12c2d5a3c0ab33"
+  },
+  "date": "2026-10-23",
+  "exclusions": [
+    "old Git history",
+    "old data/DB",
+    "historical reports/raw requests",
+    "old docs/blueprints/images",
+    "local environments/credentials",
+    "scratch/browser/archive files",
+    "duplicate v1.0 policy snapshot"
+  ],
+  "files": [
+    {
+      "path": ".env.example",
+      "sha256": "6851cd34aac2fc68f32299d13c060a52f64e8f48c3b5b9c9704520e36a61962d",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": ".gitattributes",
+      "sha256": "bce2791e2a77c291554658cf39e9458386a306aff918619e92d1e2dfcbe3e896",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": ".github/workflows/tests.yml",
+      "sha256": "786b3d35f1629e8b2673d6fc6d3e1bda177b6930b176c89cd5363139207a54ba",
+      "status": "updated"
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "b652459a3942db8d08712c8e22bfe513957fab24cbcd5c31cf7cdad4e1210474",
+      "status": "updated"
+    },
+    {
+      "path": "APPLY_AND_REVIEW.md",
+      "sha256": "ceafbdfa7ea67a4b77555338ea4238c730842a07b0fdd7078e55702b5a254a8b",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "README.md",
+      "sha256": "d37b6e8ad9d704018af6808ac640f4f7e0483d00a54a68c657bd3f4859205697",
+      "status": "updated"
+    },
+    {
+      "path": "constraints.txt",
+      "sha256": "766f50063e1e8179c9c76c59ebe5ca222b4290cc2da54047aa603ec7e1447688",
+      "status": "retained"
+    },
+    {
+      "path": "data/manifest.json",
+      "sha256": "141794bbe48b6cea59347c92bad161105e249a1a128fadaeb82c71d4ff79b55a",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "data/scenarios.json",
+      "sha256": "e163f6267ca78d1e1fd7527b2ef67e8b81ea978c1ef8ab877fe3a33d24f8d286",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "data/scores_extended.csv",
+      "sha256": "92059166ee2927f1bc1f35f64ae0ae009abaef864a93c8185cba8e50f1ef9cc4",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "sha256": "cd6018dbea7e7d6e36b43642346ed2215717dcc5f66d410e7da714b803694111",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "docs/DATA_PROVENANCE.md",
+      "sha256": "6df9b41f266b599b9b0919febed2dbcc877f13bd442c9e9856b2c5cf15d19d50",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "docs/MIGRATION_REVIEW.md",
+      "sha256": "dbd0d6c4aa25763b17ed96bdbfd887aeb1378732fad73d390e8ad770c8c51177",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "docs/VALIDATION.md",
+      "sha256": "5ebfd928769719bc590e6ef1ed36850a841e6d7da0c8862a6454ad8f9f464c5d",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "evaluation/benchmark_cases_synthetic_v2.json",
+      "sha256": "db76486ec7104bcf3a728981dde2c7777ac48ce1d7e9f2666fede10cd29e17f2",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "evaluation/scenario_fixtures_synthetic_v2.json",
+      "sha256": "6b92fb9cc9b5a79b10898fe055a01e9b7b2b3f9e34cf4a83123aebf32d49b072",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "experiments/policies/README.md",
+      "sha256": "d01f00b2cfffcd6628b4b033f2ddab125b7f520e5d2f0fae12ba518fe88abfb0",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "experiments/policies/v1_1/POL-001_score_bin_definitions.md",
+      "sha256": "3013fd6d11db68e58f90c5a2214bea25033c26afb1ae3c3d877832b1c466e1f8",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "experiments/policies/v1_1/POL-002_early_warning_thresholds.md",
+      "sha256": "3ea55fa99a96a4a5f27d9b7ff4d36cfb64c1e06ee56a12d785076eefc615470a",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "experiments/policies/v1_1/POL-003_recommended_actions_by_risk_band.md",
+      "sha256": "820220610d5bd1f5b760b400b8632e712c5f67a525a96b8b7d7c4914883e8dd5",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "experiments/policies/v1_1/POL-004_site_market_exception_rules.md",
+      "sha256": "c9d970534d1f85c57c43f8d61a166d922159a931ad2a3f966d9964b4cd0b0add",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "experiments/policies/v1_1/POL-005_data_quality_and_volatility_flags.md",
+      "sha256": "61140ef6574eb60b4d21b59d51a42008f76c8c3f285bb551a498095e1ea5135f",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "experiments/policies/v1_1/POL-006_score_recovery_and_reinstatement.md",
+      "sha256": "d48f4ce6fd82c7d9a278ecb7fb38df3acde6fd6f7ad556c255b0c4df527bb961",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "experiments/policies/v1_1/POL-007_escalation_and_committee_review_triggers.md",
+      "sha256": "719d8ae78b5fccaab586898fd7a28f6a518105da88e0a4183f128a9fecf50302",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "policy_memos/POL-001_score_bin_definitions.md",
+      "sha256": "3013fd6d11db68e58f90c5a2214bea25033c26afb1ae3c3d877832b1c466e1f8",
+      "status": "retained"
+    },
+    {
+      "path": "policy_memos/POL-002_early_warning_thresholds.md",
+      "sha256": "de6e12541d7c2677bcd832f3bb27bb8fd8924eeb2d5387be1befd52b69b41cce",
+      "status": "retained"
+    },
+    {
+      "path": "policy_memos/POL-003_recommended_actions_by_risk_band.md",
+      "sha256": "3f63fcfb589dd1012357a80c090c98a78c191334f692dd15e22ac18f6c94ebb7",
+      "status": "retained"
+    },
+    {
+      "path": "policy_memos/POL-004_site_market_exception_rules.md",
+      "sha256": "c9d970534d1f85c57c43f8d61a166d922159a931ad2a3f966d9964b4cd0b0add",
+      "status": "retained"
+    },
+    {
+      "path": "policy_memos/POL-005_data_quality_and_volatility_flags.md",
+      "sha256": "61140ef6574eb60b4d21b59d51a42008f76c8c3f285bb551a498095e1ea5135f",
+      "status": "retained"
+    },
+    {
+      "path": "policy_memos/POL-006_score_recovery_and_reinstatement.md",
+      "sha256": "55d217770648f17e0d4d5dbcd72961cbd10c3744186d3f4bb440829825ca8878",
+      "status": "retained"
+    },
+    {
+      "path": "policy_memos/POL-007_escalation_and_committee_review_triggers.md",
+      "sha256": "719d8ae78b5fccaab586898fd7a28f6a518105da88e0a4183f128a9fecf50302",
+      "status": "retained"
+    },
+    {
+      "path": "pytest.ini",
+      "sha256": "7adf0c04e3eebacd4b9b023ad2d2e2940b1d9d0dda401d12b071cf8dc13ce228",
+      "status": "retained"
+    },
+    {
+      "path": "requirements-dev.txt",
+      "sha256": "a22598621cbfd53fc3b80b60ffa5912d57ff8d28b71630623ae2491cc0e31f22",
+      "status": "retained"
+    },
+    {
+      "path": "requirements-slack.txt",
+      "sha256": "8d49434c16305e34a066165e775c411d90795e0ea6e414f78ee8348d4c308633",
+      "status": "retained"
+    },
+    {
+      "path": "requirements.txt",
+      "sha256": "75472f06220f23f3d0bb52987efd04d25bfd7109679e00e9b0779d8d96cfb636",
+      "status": "retained"
+    },
+    {
+      "path": "scripts/compare_reports_651.py",
+      "sha256": "eac201b4949b97e42b1774843b79af59570eee2b3290bef7472add80fe704a67",
+      "status": "retained"
+    },
+    {
+      "path": "scripts/demo_agent_544.py",
+      "sha256": "8b4d6848e0ceb8205bcc9f0cf6433958dd6457faed7cf9f9af7ef29ebd2d4039",
+      "status": "updated"
+    },
+    {
+      "path": "scripts/demo_benchmark_62.py",
+      "sha256": "911c30de6339b5f05a1ed997f27262b1079f4d392a8b8cd3392a2d117c52243c",
+      "status": "retained"
+    },
+    {
+      "path": "scripts/diagnose_assisted_case_645.py",
+      "sha256": "7be200ef84c60c6a35817d8c75a8f4d446ecbccbe75b27a942db8cd5ff0b9c57",
+      "status": "retained"
+    },
+    {
+      "path": "scripts/diagnose_policy_assist_644.py",
+      "sha256": "0b2e5a64d858cd8c02bab7c0ed212079f6364d225d0101db215dba1c91390d2f",
+      "status": "retained"
+    },
+    {
+      "path": "scripts/diagnose_policy_evidence_643.py",
+      "sha256": "fa3d8105a1a60897196fad2cf64f0b10c938021293d47349416da6746be5d6a7",
+      "status": "retained"
+    },
+    {
+      "path": "scripts/diagnose_policy_mismatch_64.py",
+      "sha256": "1aed6d942980b983cbefe10e9023275f02f3ebc8fae40a13d4f4150af29b3199",
+      "status": "retained"
+    },
+    {
+      "path": "scripts/diagnose_provider_failures_653.py",
+      "sha256": "fd82866c98fdc2ae793abf5a4e350785cef43abb3d64ec2da635a43227abe087",
+      "status": "retained"
+    },
+    {
+      "path": "scripts/generate_batch_notes_713.py",
+      "sha256": "8bbb241bdc5d526faaeaf34171a789886917104cd29cd6c315c67c722141c9fd",
+      "status": "retained"
+    },
+    {
+      "path": "scripts/prepare_experiment_metadata_6522.py",
+      "sha256": "020ccbaf6094681685a3b4c7363614bf3a67c348860c0b6a3c96bd064ab96e56",
+      "status": "retained"
+    },
+    {
+      "path": "scripts/run_assisted_benchmark_645.py",
+      "sha256": "8ba55f68f84890831d71ab0135334335f26760bcb43c56630b98bc0d239d9125",
+      "status": "retained"
+    },
+    {
+      "path": "scripts/run_live_benchmark_64.py",
+      "sha256": "171543107aa037cf485ca63312875b12545d658d0a24bf1b3d2a95a207ae5190",
+      "status": "retained"
+    },
+    {
+      "path": "scripts/run_paced_assisted_benchmark_646.py",
+      "sha256": "a36cff7377229869c1a579a1e6b75996308ac8f8724973443292d58a087ae70e",
+      "status": "retained"
+    },
+    {
+      "path": "scripts/run_provider_experiment_6525.py",
+      "sha256": "ce62390ab049f4aa30a3a32b24e5919703c4deb25aec2b9593683af7c20157d3",
+      "status": "retained"
+    },
+    {
+      "path": "scripts/run_slack_review_83.py",
+      "sha256": "6a467ac34886319930c11020babc06bd26bf76b96d10d4ee1a937e47f96570b3",
+      "status": "retained"
+    },
+    {
+      "path": "scripts/scan_batch_712.py",
+      "sha256": "55f6ac22ca200a76538d38a38dafd699c11d1897d4db46aeb362151fb0c49f6c",
+      "status": "retained"
+    },
+    {
+      "path": "scripts/score_benchmark_63.py",
+      "sha256": "b996c3fec8691d7d0b06cc0e9d215a6d5b951891c190b013a0a595033f7ff726",
+      "status": "retained"
+    },
+    {
+      "path": "scripts/slack_smoke_test.py",
+      "sha256": "6afd22d9e7a5a82b452d309465b5b329bc14864215019958c353ff77b353de0f",
+      "status": "retained"
+    },
+    {
+      "path": "src/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": "retained"
+    },
+    {
+      "path": "src/agent.py",
+      "sha256": "ecc1a364770241f99fa7179176a4778f0af5b3dd12383500b0aaf6389f590ac0",
+      "status": "updated"
+    },
+    {
+      "path": "src/batch_notes.py",
+      "sha256": "2ea987ebad53ff69ae8a5b71f562243cd1b10ef7b6aa5835d6ab3ed540329855",
+      "status": "retained"
+    },
+    {
+      "path": "src/batch_scan.py",
+      "sha256": "b77be95db918d30acfd955e7299cd0c1e911ebb4a1753c27c071272e178e40f5",
+      "status": "retained"
+    },
+    {
+      "path": "src/bound_experiment.py",
+      "sha256": "e39addc7ca8f9567e77da6880345bd18859e29161bd0513167debda410e54069",
+      "status": "updated"
+    },
+    {
+      "path": "src/combined_temporal_narrative.py",
+      "sha256": "8e1290b19df977b8e0ca7f7ed169f62abaf5142f77138783f5d9d8a37b343a8f",
+      "status": "retained"
+    },
+    {
+      "path": "src/config.py",
+      "sha256": "12eb9274e1901515efb602ed9df32124c03cc772fc5718af98e7b187833c4ea0",
+      "status": "retained"
+    },
+    {
+      "path": "src/data_loader.py",
+      "sha256": "4b3bbf1424039285a27101781638278044beebd961da5454a770ec9fe56a4c40",
+      "status": "updated"
+    },
+    {
+      "path": "src/evaluation_dataset.py",
+      "sha256": "b410adca28e7ccd63376c60a38b59251bf57751a3a55da24a83917bac50e7015",
+      "status": "updated"
+    },
+    {
+      "path": "src/evaluation_metrics.py",
+      "sha256": "fbcf26123edf4487c0a37003c855c836c62e1d815778818ef67b56802f1916de",
+      "status": "retained"
+    },
+    {
+      "path": "src/evaluation_runner.py",
+      "sha256": "910c598c2c948c9571c6d9a6c6c7e6828a52193297a2354ee07e2bdcf23f6c28",
+      "status": "updated"
+    },
+    {
+      "path": "src/experiment_metadata.py",
+      "sha256": "9a2c904052031dbdf98d5da1d546d48d761ca62780c0a38f6ef01b95f1b1d761",
+      "status": "updated"
+    },
+    {
+      "path": "src/grace_decline_narrative.py",
+      "sha256": "bb64edad86f4f9c678464861cb35a33470f279c308464e5b2abc1d3d0b83708f",
+      "status": "retained"
+    },
+    {
+      "path": "src/guardrail.py",
+      "sha256": "aede35c288398f18feded1d2a65c3334d997dc5ddc7a4a0e9943db284ed37b05",
+      "status": "retained"
+    },
+    {
+      "path": "src/live_evaluation.py",
+      "sha256": "02da8124589ff9ec6733d9ee9beb31a8317f352b2ad88ab80dd5cb7825170908",
+      "status": "updated"
+    },
+    {
+      "path": "src/llm_client.py",
+      "sha256": "e2a1535c1b84364932c439ff4e3b199cbf94b40e807b16f42be94093954ea2fc",
+      "status": "retained"
+    },
+    {
+      "path": "src/narrative_composer.py",
+      "sha256": "1795d940c450b3bf7292bd9717fb9b80f42b334844dc80fa550692c7a901a4a2",
+      "status": "retained"
+    },
+    {
+      "path": "src/narrative_findings.py",
+      "sha256": "486121acf4bfb1633c4a20659d433ca3218c4c196a62508f66de727efe1dfa7f",
+      "status": "retained"
+    },
+    {
+      "path": "src/paced_assisted_benchmark.py",
+      "sha256": "525be8680bdb4387a55a5f2bb0bbbcf3f5298aaf7472bd366b1d51622fe5f20c",
+      "status": "retained"
+    },
+    {
+      "path": "src/paced_experiment_binding.py",
+      "sha256": "a2dc2bf768874e187576d10bf4c4ea3460e8c30f191cd21d2bd7e3a09401397e",
+      "status": "retained"
+    },
+    {
+      "path": "src/policy_assist_experiment.py",
+      "sha256": "c7aa1efa500ff33de0553c91062dc9d36c619da4970db169a4644fbf0933acbb",
+      "status": "retained"
+    },
+    {
+      "path": "src/policy_assist_suite.py",
+      "sha256": "b6513279179b9603e9891ffd00289da35fa69333beae34feaae68853ab2ec9fc",
+      "status": "retained"
+    },
+    {
+      "path": "src/policy_claim_guard.py",
+      "sha256": "deed2ecfdcc42f7ef7064376f5fa710869159b3b015b1e599cce89def63fe301",
+      "status": "retained"
+    },
+    {
+      "path": "src/policy_decisions.py",
+      "sha256": "11ce748d9a12599da00a5fd51ca2a15c9f356777fe3595324f4a90860e2954d6",
+      "status": "retained"
+    },
+    {
+      "path": "src/policy_passage_variants.py",
+      "sha256": "f4e63c9ee89a3343662440c3e1841900ce4a2297aa75f63d32ced55fe0872161",
+      "status": "retained"
+    },
+    {
+      "path": "src/provider_experiment.py",
+      "sha256": "e7b7ec6f3c88859e3adb0c32765c2c107140d02a87db1cd0ec45fed41d5775a9",
+      "status": "updated"
+    },
+    {
+      "path": "src/quality_hold_narrative.py",
+      "sha256": "6f098ac80c5ea28edec862c79f3f9632fdbd8f273e3644eb1e7bf3a342efa18b",
+      "status": "retained"
+    },
+    {
+      "path": "src/report_comparison.py",
+      "sha256": "3f4b0401360330a8792f4fdf2b7b896a5f1aa63c0d4ca7f764a068be7a7c2aeb",
+      "status": "retained"
+    },
+    {
+      "path": "src/request_budget.py",
+      "sha256": "ddc6c06318b470547ccfdf46a706dea16f792231b086bfe7a51b3244bdc546bd",
+      "status": "retained"
+    },
+    {
+      "path": "src/response_gate.py",
+      "sha256": "0f4de4a5a2a7e0ba4cd38aafe0ba163ffb9d04857dd2093433099d942befe136",
+      "status": "retained"
+    },
+    {
+      "path": "src/retriever.py",
+      "sha256": "1033d17d588d8f9b80307aac8415633db2bde11df6cdf37fc24d509038f17409",
+      "status": "updated"
+    },
+    {
+      "path": "src/retriever_tfidf_baseline.py",
+      "sha256": "1bcf898b66e496722300826d673f9039c4449f2982a8b0f0f31d9cf6349a433c",
+      "status": "retained"
+    },
+    {
+      "path": "src/score_tools.py",
+      "sha256": "475a88a9dc1e720ca7ef69d93493d67e2765516a98deae5c47b67face1cac886",
+      "status": "updated"
+    },
+    {
+      "path": "src/slack_listener.py",
+      "sha256": "1d621383a3eaeacfd024a533d1d400adaa49af0294a1b2faccc228afbfca21d9",
+      "status": "retained"
+    },
+    {
+      "path": "src/slack_review_service.py",
+      "sha256": "eaae1d2d7619641a8a22464e30231944d266d9efe37e8d82f74e2383b597ca67",
+      "status": "updated"
+    },
+    {
+      "path": "src/structured_output.py",
+      "sha256": "4048eea90a078518d54946fdfb62f62996a5efe7ba165051ea9e1efab60d184c",
+      "status": "retained"
+    },
+    {
+      "path": "src/synthetic_benchmark.py",
+      "sha256": "390a042711de0bcd3f5bb46354e8a14c88344d611b60671c5354ee10a0596e96",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "src/synthetic_database.py",
+      "sha256": "2977b81a21e197be185cd638259b46d6eae1adde03080d6f70834ceed6a5b97a",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "src/synthetic_dataset.py",
+      "sha256": "47fa1ff65c49bf3f9dc1bf6ec4f92d27c4b5a6a65f5020fbb94a41f5f563bd05",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "src/synthetic_foundations.py",
+      "sha256": "c9d5ecc248a2f00cfbf2ee6ee08103c2977ca995950c7560f7422a5dd6b946e8",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "src/temporal_evidence.py",
+      "sha256": "6bee9c4439b6e61a2033ff8bea41e2c911e0366b560e71cf57b3db0916136baf",
+      "status": "retained"
+    },
+    {
+      "path": "src/temporal_narrative.py",
+      "sha256": "5f7d771f88c62d1790b2df3a38b6b0e69c63b3bb0187e30fc55c33fb43247f71",
+      "status": "retained"
+    },
+    {
+      "path": "src/temporal_policy.py",
+      "sha256": "2d821743972bb59f066f46ef7cb5bd4c170f799b451303b7624f377b04e07322",
+      "status": "retained"
+    },
+    {
+      "path": "src/temporal_policy_mapping.py",
+      "sha256": "edcabd7196812245bc23494cc19f0dbdfe11f582679f7265f875e01b8f9d7f25",
+      "status": "retained"
+    },
+    {
+      "path": "src/verification_pipeline.py",
+      "sha256": "be8fcc1ad52423397cf9da1aa6e4402e4801cb72c4fc3d454a12c2d5a3c0ab33",
+      "status": "retained"
+    },
+    {
+      "path": "src/zero_decline_narrative.py",
+      "sha256": "5556227c3c512356f027f4a0e301292f7a6b6138eba5fd630c36c94526f72e62",
+      "status": "retained"
+    },
+    {
+      "path": "tests/test_agent_47.py",
+      "sha256": "1eea21183507785b38d0b84cce6078b3bb3637f12318e5bd7debe7ed8e9af133",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_agent_544.py",
+      "sha256": "966a313e491fadc3f03276d91ac11188f712cbf944e5761b0e1335832b7224a0",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_agent_544_real.py",
+      "sha256": "bddf225c4b6d1f196e0d27f6f6e3ef44541bab0018747d20b6940f2527ea3b0a",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_assisted_suite_645.py",
+      "sha256": "957bfdb136ac7751f851b93104a9d42e8a80c50b3c2116924116ca3e461cdc7e",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_batch_notes_713.py",
+      "sha256": "c1b4dc148243ff276655e731e15402238814842cb603237c73abc90b7d64697e",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_batch_scan_712.py",
+      "sha256": "36817118d11e5a5a7e176cdf7a49d121683541c8551a725b4162844996332480",
+      "status": "retained"
+    },
+    {
+      "path": "tests/test_bound_experiment_6523.py",
+      "sha256": "dbcb872f70aafb024f7d39a9f1dc1fbb84a8ee8d7d380340ba59136daf6485e9",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_candidate_setup.py",
+      "sha256": "472554282c4139b351bf6c61bb61fb0b4a2179e5d4773d1bd600fac74bd0ba78",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "tests/test_claim_first.py",
+      "sha256": "cc000e63a8190f31b7c7476010f7f37f45962273fba00d42f65e5ddbbafa895d",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_claim_first_policy_gate.py",
+      "sha256": "9136d8c2f39074382b555b8316800d85f53ee17056d4868895a3f69ca6046d7d",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_claim_first_real.py",
+      "sha256": "7afe2d240895a8d3f10c99ff272b349e534221690dd00d9b1fc05a94d924d99b",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_claim_first_scenario_matrix.py",
+      "sha256": "9bf1d9922ef4cb3c94b7c978315f34c78a2b326b55d969bcafbaaf7191c349fd",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_combined_claim_first.py",
+      "sha256": "59a35b3aa550de6c17eb26e9d1280a6a22c427c229b6a1f887a2476bf635701b",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_decline_events_gate.py",
+      "sha256": "45ca2e727dcce3e4bdda399624f386867b449e883fb0857c7d36853dd831b8ef",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_diagnose_assisted_case_645.py",
+      "sha256": "783fc570f978492c4de9a0cfdb95e6b791ad51c66e2a4fbb6c897c6aed6de29b",
+      "status": "retained"
+    },
+    {
+      "path": "tests/test_evaluation_dataset.py",
+      "sha256": "e17de654ab4eaeaadb98cde4984515528782a2a7b8dd4e94bf16f17b0888847b",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_evaluation_metrics.py",
+      "sha256": "68f8869c9d2c9558eb6197bfaa268dccaf73c2cdf4bf18bbef9e8c82b062cef4",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_evaluation_runner.py",
+      "sha256": "c002a12add85036c75a313fc2c6dd4d9b5f8d1eebc3bbbd2ce688af2faa9693c",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_event_count_prompt_64.py",
+      "sha256": "33da026dc329a57b45be3ef64cc69dce9d91f6991eb9bc86bbca606e2c4fee48",
+      "status": "retained"
+    },
+    {
+      "path": "tests/test_experiment_metadata_6522.py",
+      "sha256": "b8f7e485745d7675b268cadee5b5bcf9854e047898de1c8b463217d777e3d1d2",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_failure_diagnostic_653.py",
+      "sha256": "ec79268b09b7a93418065014ee63ef9db782b48881be23f1465dcea8d6a9ffb9",
+      "status": "retained"
+    },
+    {
+      "path": "tests/test_full_temporal_narrative.py",
+      "sha256": "07231282311ef0fec316cbe6ee16f5c35fad8f3a93f9b3235da6cd0936fad153",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_grace_decline_narrative.py",
+      "sha256": "75203d53aec390776617b1b1ec306f36d54516823881b1562c1c387e8742c788",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_guardrail.py",
+      "sha256": "2b87802bba5a7d57ef5c68d0532adc31f5b153a221e560d1ed4d11378c19a272",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_insufficient_limitation_classification_645.py",
+      "sha256": "6223430919d2b084d0a03408219a2d5a9ef22f6acbe6ae62127377e35b2c86aa",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_limitation_semantics_64.py",
+      "sha256": "4af13b5c028c9bd5adb01c3a64686fda83b02e911f5b019934a1827b4f76a869",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_live_evaluation.py",
+      "sha256": "4fc5d0fad11c3aaf5405c121a26d2789c17cc7d2b608622259989e88cb71d6bf",
+      "status": "retained"
+    },
+    {
+      "path": "tests/test_narrative_coverage_regression.py",
+      "sha256": "ac7b04d17e159b6fd72831c62c0b291aa3c19bfd70fba667fdbe35233cb47486",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_narrative_findings.py",
+      "sha256": "73af699ada5c24f7f594ee731d35ed24b6cbb0c55acd252734a1dfaa7e4aabf9",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_paced_assisted_benchmark_646.py",
+      "sha256": "70b4a812f5cfd0eea2341fec02e69538661e39c1d9f34fa152024538297885fc",
+      "status": "retained"
+    },
+    {
+      "path": "tests/test_paced_experiment_binding_6524.py",
+      "sha256": "453c093206987b85c930e945f3e4cf27f6baba763152a5b15f70526297326f9e",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_policy_assist_644.py",
+      "sha256": "19d640da0244067d728d1b51205dbb6dc214aec2e49d01032f2024c8c2976f79",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_policy_claim_guard.py",
+      "sha256": "bf6f83f07ecd98de4f5e252162610e653214a13bf3c28e09e027ef2bc009823c",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_policy_decisions.py",
+      "sha256": "29f4eb3e1bfdf1485bce22554d3cd04e8fb3b0ffb237f1870cb01c8ec238a910",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_policy_evidence_clarity_643.py",
+      "sha256": "145f0227d178875be0f96f6b33c8757b27c241a7486316b1fa5291f66fce30ff",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_policy_narrative_composer.py",
+      "sha256": "fb08b567dab88b3d718bea59b6e1397d2408c19d7c4809a8ebaee5ed48873183",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_provider_adapter_contract_652.py",
+      "sha256": "0c284cad940c7f6c9182918539177db449d79606eb374e25cee4e46cd0f239a3",
+      "status": "retained"
+    },
+    {
+      "path": "tests/test_provider_experiment_6525.py",
+      "sha256": "76df7f4dbdb2c7948329bae2c85b5b663bfc5e7d1aece6444b9b833d2a95b710",
+      "status": "retained"
+    },
+    {
+      "path": "tests/test_quality_hold_narrative.py",
+      "sha256": "3bf7d93b382cf4fd820f318c46925b95c37f688edb669ee4da6164cc8801b9f0",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_quality_hold_prompt_645.py",
+      "sha256": "f7267f623a750a3ddfd409cd171458e9b5e29bd9c92f0c518fb2433a95960286",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_quota_provider_integration_6526.py",
+      "sha256": "3c3ffeefbcacf22be052b9c7f0fde983d38bd1c67b63bcd28e68bb789fdefbf3",
+      "status": "retained"
+    },
+    {
+      "path": "tests/test_report_comparison_651_unittest.py",
+      "sha256": "8f96effabf8f8651cf2354d0ba9663fc9dde6d7d13e84b29d3bf72439443e78b",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_request_budget_6526.py",
+      "sha256": "90ac7c87c6cd78e6c77d09c5c336f734a8714f152c697fe771db49e0f93883bb",
+      "status": "retained"
+    },
+    {
+      "path": "tests/test_response_gate.py",
+      "sha256": "c08bd961dee17f5f9d4296251448cfc2264863a7e0dd44521bad1f5ef9b1b1e9",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_response_gate_real.py",
+      "sha256": "c3d8711a5ac3338c381e516f179e1d48a61683961a0e50f00ddcc3854da0f7b6",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_scope_limitations_contract_653.py",
+      "sha256": "e6556531ea8bc9387d873094ffa1926abfa4aab2e25caeb15fc0d1dbda81fc56",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_slack_listener_83.py",
+      "sha256": "8a6222f38ce406f8e85ec08994a108a3ce81ef99a1fa017bc1a8d40c0628738e",
+      "status": "retained"
+    },
+    {
+      "path": "tests/test_slack_live_84.py",
+      "sha256": "952538498f5854c9a6320f302adfd732b5273167760ec86299bb0382b27bfc6d",
+      "status": "retained"
+    },
+    {
+      "path": "tests/test_slack_review_service.py",
+      "sha256": "f5bbdafc4fbf390f2df67f14d63eae947bc6ca10fb1e2484c5160eedc5ba7a91",
+      "status": "retained"
+    },
+    {
+      "path": "tests/test_structured_output.py",
+      "sha256": "1d56d30598f5a307c67b655ff963317b2698a03fb10c5370e795eede6a76df6b",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_synthetic_benchmark.py",
+      "sha256": "06225c7719a625b2ee1caa94ce30556a406074f81e26ca924db9391e9e62d13c",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "tests/test_synthetic_database.py",
+      "sha256": "86a98669396a9362a19692c353836efec055f02288cbf949306e6e502cc6873f",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "tests/test_synthetic_dataset.py",
+      "sha256": "f2532a3ab0740052da967eba27e9a2721e9c08c9e340d3b0f994139a990c5fba",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "tests/test_synthetic_foundations.py",
+      "sha256": "dd24ac333195726ee5a7c30fc55b3a189a4f5a2ce4d9683095da05126b145380",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "tests/test_temporal_evidence.py",
+      "sha256": "58aeeb9168676a1deb178beb4e6128f58d2ddd40db65defbe0d2a435cee035b1",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_temporal_narrative.py",
+      "sha256": "6fc41ecc1cc2a9a578e2818e172b42867a0f70fb3965f9567ab685e88a0782a3",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_temporal_policy.py",
+      "sha256": "38fcace3c10499dbe87eeab12a3b8f3f882b37609d0c777f90ae6372356f939a",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_temporal_policy_mapping.py",
+      "sha256": "2026099546502fdb784e025eaf43325a76ffed046e9e759e68ccd7f8236c69a4",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_verification_pipeline.py",
+      "sha256": "f1286171b77c14129f7e1948f8f0e158a77898c224e5e772cf6ffdb8f6a0af6d",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_verification_pipeline_real.py",
+      "sha256": "eee9d1222c6917a40cb74e027f63ab3af7f5db1d22228ada9794dc4f57cba502",
+      "status": "updated"
+    },
+    {
+      "path": "tests/test_zero_decline_narrative.py",
+      "sha256": "95805d8b0906a535fba163c963288f1ab4773baf5d6273f4f6aee04a635cc141",
+      "status": "updated"
+    },
+    {
+      "path": "validation/benchmark_backend.py",
+      "sha256": "0be55cda0f19dd8a577782260274eafdbf3ba0203a8e196dd114e9a1808d1b91",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "validation/check_benchmark_safety_v2.py",
+      "sha256": "feeb19a3f300f8100d8f82abfcfe782b54eaf172e8b36061394dd69b274b4011",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "validation/check_current_policy.py",
+      "sha256": "e14c11d202940b30ff48899a5568d666b6599f85f46c7a0ede1bf04f742d29ec",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "validation/check_database_integration.py",
+      "sha256": "5e087d6047df20d923d08e5204d297b2f34b291e3c7dcbe2857766b822f1dfd1",
+      "status": "new_or_relocated"
+    },
+    {
+      "path": "validation/run_scripted_benchmark_v2.py",
+      "sha256": "2fcaef5305960562ede90daeca9e637b599eccf261537ae658e8eb039a55698f",
+      "status": "new_or_relocated"
+    }
+  ],
+  "ignored_missing_from_archive_count": 82,
+  "inherited_test_definition_count_changes": 0,
+  "inherited_test_files_retained": 56,
+  "inventory_sha256": "66ae1a40c5a2ebe1a8cce632ddc19995c9b313b42dde2947e29c54ce865eba2b",
+  "method_ast_identity": {
+    "agent.py:run_agent": true,
+    "score_tools.py:_connect": true,
+    "score_tools.py:compute_trend": true,
+    "score_tools.py:get_history": true,
+    "score_tools.py:get_latest_score": true,
+    "score_tools.py:get_market_average": true,
+    "score_tools.py:get_migrations": true,
+    "score_tools.py:list_accounts": true,
+    "slack_review_service.py:ReviewService": true,
+    "slack_review_service.py:parse_request": true
+  },
+  "new_test_files": 5,
+  "schema_version": 1,
+  "selected_inventory_counts": {
+    "ignored": 99,
+    "tracked": 193
+  },
+  "selected_tracked_missing_from_archive_disposition": "one legacy CSV intentionally replaced",
+  "source_archive_sha256": "e44a23c6a8b4592158e4ad2f61e9539ed80f3aa6668cae83dbfe5375c24cf3df",
+  "source_commit_user_inventory": "3fc0a3b2400e5ef316a01d29b1eed0ecf475c52c",
+  "status": "review candidate; not initialized or published",
+  "validation": {
+    "hosted_new_matrix_run": false,
+    "live_provider_calls": 0,
+    "pinned_dependency_check": "passed",
+    "platform": "Linux",
+    "pytest_passed": 1335,
+    "pytest_subtests_passed": 169,
+    "python": "3.12.14",
+    "scripted_benchmark_passed": 6,
+    "windows_candidate_run": false
+  }
+}

@@ -1,0 +1,9 @@
+# Direct runtime dependencies. Transitive versions are fixed in constraints.txt.
+-c constraints.txt
+numpy==2.4.6
+pandas==3.0.6
+scikit-learn==1.9.1
+nltk==3.10.3
+python-dotenv==1.2.4
+openai==3.24.0
+anthropic==1.13.0

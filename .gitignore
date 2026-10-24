@@ -1,0 +1,24 @@
+# Local credentials, environments and caches
+.env
+.env.*
+!.env.example
+.venv*/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.idea/
+.ipynb_checkpoints/
+
+# Generated databases, run evidence and exploration data
+data/*.db
+data/database_receipt.json
+data/.build-*/
+generated/
+results/
+outputs/
+var/
+*.zip
+
+# Never import an old base-data file into the clean project
+data/scores.csv

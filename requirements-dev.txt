@@ -1,0 +1,4 @@
+# Complete regression environment, including the optional Slack SDK.
+-r requirements-slack.txt
+pytest==8.4.2
+pytest-subtests==0.14.2

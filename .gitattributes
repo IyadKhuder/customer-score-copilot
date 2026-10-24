@@ -1,0 +1,3 @@
+# Keep hashed source, policy and dataset bytes identical across OS checkouts.
+# This disables newline conversion; it does not disable normal text diffs.
+* -text

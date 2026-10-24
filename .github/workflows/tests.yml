@@ -1,0 +1,54 @@
+name: Offline regression
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: ${{ matrix.os }} / Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ['3.11', '3.12']
+    env:
+      POLICY_VERSION: v1.0
+      GEMINI_API_KEY: ''
+      ANTHROPIC_API_KEY: ''
+      SLACK_BOT_TOKEN: ''
+      SLACK_APP_TOKEN: ''
+      SLACK_ALLOWED_CHANNEL_ID: ''
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: |
+            requirements*.txt
+            constraints.txt
+      - name: Install regression dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Check dependency consistency
+        run: python -m pip check
+      - name: Verify synthetic inputs and build database
+        run: python -m src.data_loader
+      - name: Import optional SDKs without connecting
+        run: python -c "import openai, anthropic, slack_bolt; from slack_bolt.adapter.socket_mode import SocketModeHandler"
+      - name: Run offline tests
+        run: python -m pytest -q -rs
+      - name: Replay synthetic v2 benchmark
+        run: python -m scripts.demo_benchmark_62 --output generated/ci_scripted_v2.json
+      - name: Score synthetic v2 benchmark
+        run: python -m scripts.score_benchmark_63 --input generated/ci_scripted_v2.json --output generated/ci_scores_v2.json
+      - name: Import experimental corpus in a separate process
+        env:
+          POLICY_VERSION: v1.1
+        run: python -c "from src.retriever import POLICY_DIR, load_all_chunks; assert POLICY_DIR.name == 'v1_1'; assert load_all_chunks()"

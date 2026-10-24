@@ -1,0 +1,173 @@
+{
+  "benchmark_id": "scorecopilot_synthetic_claim_first_v2",
+  "cases": [
+    {
+      "expected": {
+        "consecutive_decline_event_count": 1,
+        "next_action": "publish",
+        "public_phrases": [
+          "eligible for early-warning consideration"
+        ],
+        "publishable": true,
+        "reason_codes": [],
+        "required_policy_ids": [
+          "POL-002"
+        ],
+        "warning_signal_status": "triggered"
+      },
+      "id": "CF-001",
+      "question": "For fictional benchmark account 81000001 in market 1 as of December 1991, report only the verified facts and supported policy signal in scope score_bin_warning_signal_decline_events. Distinguish policy signals from administrative warning status and credit decisions.",
+      "request": {
+        "account_id": 81000001,
+        "as_of_period": "1991-12-01",
+        "claim_scope": "score_bin_warning_signal_decline_events",
+        "market": 1,
+        "publication_mode": "claims_first"
+      },
+      "scenario_id": "standard_trigger",
+      "title": "standard trigger"
+    },
+    {
+      "expected": {
+        "consecutive_decline_event_count": 0,
+        "next_action": "publish",
+        "public_phrases": [
+          "was not triggered"
+        ],
+        "publishable": true,
+        "reason_codes": [],
+        "required_policy_ids": [
+          "POL-002"
+        ],
+        "warning_signal_status": "not_triggered"
+      },
+      "id": "CF-002",
+      "question": "For fictional benchmark account 81000002 in market 1 as of December 1991, report only the verified facts and supported policy signal in scope score_bin_warning_signal_no_declines. Distinguish policy signals from administrative warning status and credit decisions.",
+      "request": {
+        "account_id": 81000002,
+        "as_of_period": "1991-12-01",
+        "claim_scope": "score_bin_warning_signal_no_declines",
+        "market": 1,
+        "publication_mode": "claims_first"
+      },
+      "scenario_id": "standard_no_trigger",
+      "title": "standard no trigger"
+    },
+    {
+      "expected": {
+        "consecutive_decline_event_count": 2,
+        "next_action": "publish",
+        "public_phrases": [
+          "pending data-quality review"
+        ],
+        "publishable": true,
+        "reason_codes": [],
+        "required_policy_ids": [
+          "POL-002",
+          "POL-005"
+        ],
+        "warning_signal_status": "pending_data_quality"
+      },
+      "id": "CF-003",
+      "question": "For fictional benchmark account 81000003 in market 1 as of December 1991, report only the verified facts and supported policy signal in scope score_bin_warning_signal_quality_hold. Distinguish policy signals from administrative warning status and credit decisions.",
+      "request": {
+        "account_id": 81000003,
+        "as_of_period": "1991-12-01",
+        "claim_scope": "score_bin_warning_signal_quality_hold",
+        "market": 1,
+        "publication_mode": "claims_first"
+      },
+      "scenario_id": "standard_quality_hold",
+      "title": "standard quality hold"
+    },
+    {
+      "expected": {
+        "consecutive_decline_event_count": 0,
+        "next_action": "gather_evidence",
+        "public_phrases": [],
+        "publishable": false,
+        "reason_codes": [
+          "POLICY_EVIDENCE_INSUFFICIENT"
+        ],
+        "required_policy_ids": [
+          "POL-002"
+        ],
+        "warning_signal_status": "insufficient_evidence"
+      },
+      "id": "CF-004",
+      "question": "For fictional benchmark account 81000004 in market 1 as of December 1991, report only the verified facts and supported policy signal in scope score_bin_warning_signal_quality_hold. Distinguish policy signals from administrative warning status and credit decisions.",
+      "request": {
+        "account_id": 81000004,
+        "as_of_period": "1991-12-01",
+        "claim_scope": "score_bin_warning_signal_quality_hold",
+        "market": 1,
+        "publication_mode": "claims_first"
+      },
+      "scenario_id": "insufficient_history",
+      "title": "insufficient history"
+    },
+    {
+      "expected": {
+        "consecutive_decline_event_count": 1,
+        "next_action": "publish",
+        "public_phrases": [
+          "four consecutive monthly declines"
+        ],
+        "publishable": true,
+        "reason_codes": [],
+        "required_policy_ids": [
+          "POL-002",
+          "POL-004"
+        ],
+        "warning_signal_status": "triggered"
+      },
+      "id": "CF-005",
+      "question": "For fictional benchmark account 83000005 in market 3 as of December 1991, report only the verified facts and supported policy signal in scope grace_decline_events. Distinguish policy signals from administrative warning status and credit decisions.",
+      "request": {
+        "account_id": 83000005,
+        "as_of_period": "1991-12-01",
+        "claim_scope": "grace_decline_events",
+        "last_exception_review_period": "1991-10-01",
+        "market": 3,
+        "publication_mode": "claims_first",
+        "site_onboarded_period": "1991-01-01"
+      },
+      "scenario_id": "grace_eligible",
+      "title": "grace eligible"
+    },
+    {
+      "expected": {
+        "consecutive_decline_event_count": 1,
+        "next_action": "publish",
+        "public_phrases": [
+          "pending data-quality review under POL-005"
+        ],
+        "publishable": true,
+        "reason_codes": [],
+        "required_policy_ids": [
+          "POL-002",
+          "POL-004",
+          "POL-005"
+        ],
+        "warning_signal_status": "pending_data_quality"
+      },
+      "id": "CF-006",
+      "question": "For fictional benchmark account 83000006 in market 3 as of December 1991, report only the verified facts and supported policy signal in scope grace_decline_events. Distinguish policy signals from administrative warning status and credit decisions.",
+      "request": {
+        "account_id": 83000006,
+        "as_of_period": "1991-12-01",
+        "claim_scope": "grace_decline_events",
+        "last_exception_review_period": "1991-10-01",
+        "market": 3,
+        "publication_mode": "claims_first",
+        "site_onboarded_period": "1991-01-01"
+      },
+      "scenario_id": "grace_quality_hold",
+      "title": "grace quality hold"
+    }
+  ],
+  "data_mode": "isolated_scenario_fixtures",
+  "fixture_set_id": "scorecopilot_synthetic_scenarios_v2",
+  "mapping_version": "demo-bins-1",
+  "schema_version": 2
+}
