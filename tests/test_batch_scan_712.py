@@ -91,7 +91,7 @@ def test_short_positive_and_negative(tmp_path):
 
 def test_missing_and_unknown(tmp_path):
     report = scan.scan_batch(request([1,2]),database(tmp_path,history()[:-1]))
-    assert [r['reason_codes'] for r in report['results']]==[['MISSING_AS_OF_OBSERVATION'],['NO_HISTORY_AS_OF']]
+    assert [r['reason_codes'] for r in report['results']]==[['MISSING_AS_OF_OBSERVATION'],['ACCOUNT_NOT_FOUND']]
 
 
 def test_future_and_account_order_invariance(tmp_path):

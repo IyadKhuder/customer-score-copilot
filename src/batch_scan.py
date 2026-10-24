@@ -78,7 +78,7 @@ def _snapshot(db_path, request):
                     continue
                 if month <= request['as_of_period'][:7]:
                     selected.append(dict(zip(('period', 'score', 'bin', 'market'), row)))
-            snapshots[account] = (selected, invalid_date)
+            snapshots[account] = (selected, invalid_date, bool(rows))
     return snapshots
 
 
@@ -178,20 +178,25 @@ def scan_batch(request, db_path='data/scores.db', *, source_root=ROOT):
         snapshots = _snapshot(db_path, request)
         # SQLite values can include blobs/non-finite floats. Never hash repr() or leak raw errors.
         safe = []
-        for account, (rows, invalid_date) in snapshots.items():
+        for account, (rows, invalid_date, account_exists) in snapshots.items():
             try:
                 encoded = _canonical(rows)
             except (ValueError, TypeError):
                 encoded = None
-            safe.append(dict(account_id=account, history_json=encoded, invalid_date=invalid_date))
+            safe.append(dict(account_id=account, history_json=encoded, invalid_date=invalid_date,
+                             account_exists=account_exists))
         report['source']['input_sha256'] = _sha(dict(request=request, snapshot=safe))
     except Exception as exc:
         report['run_error'] = dict(code='SNAPSHOT_OR_SOURCE_FAILED', error_type=type(exc).__name__)
     else:
-        for account, (rows, invalid_date) in snapshots.items():
+        for account, (rows, invalid_date, account_exists) in snapshots.items():
             result = _base(account, request['as_of_period'])
             try:
-                _classify(result, rows, invalid_date)
+                if not account_exists:
+                    result.update(scan_outcome='insufficient_data',
+                                  reason_codes=['ACCOUNT_NOT_FOUND'], next_action='verify_account_id')
+                else:
+                    _classify(result, rows, invalid_date)
             except Exception as exc:
                 code = 'INVALID_HISTORY' if isinstance(exc, (ValueError, TypeError, KeyError)) else 'ACCOUNT_SCAN_FAILED'
                 result.update(scan_outcome='failed', reason_codes=[code],

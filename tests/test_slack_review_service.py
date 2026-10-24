@@ -37,7 +37,10 @@ def test_deterministic_outcomes(tmp_path):
     report(tmp_path, scores=[600]*8)
     s = ReviewService(tmp_path/'scores.db', client_factory=lambda: pytest.fail('provider called'), daily_remaining=8)
     assert s.review('review account 1 as of 2025-02')['status'] == 'no_signal_in_scope'
-    assert s.review('review account 999 as of 2025-02')['status'] == 'insufficient_data'
+    absent = s.review('review account 999 as of 2025-02')
+    assert absent['status'] == 'insufficient_data'
+    assert absent['reason_codes'] == ['ACCOUNT_NOT_FOUND']
+    assert absent['next_action'] == 'verify_account_id'
     with sqlite3.connect(tmp_path/'scores.db') as db:
         db.execute('UPDATE scores SET market=2')
     assert s.review('review account 1 as of 2025-02')['status'] == 'unsupported'
