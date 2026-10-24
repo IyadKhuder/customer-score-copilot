@@ -1,8 +1,9 @@
-# Behavioral Score Trajectory Copilot
+# Slack Customer Score Copilot
 
 A portfolio and learning project combining constrained SQLite tools, policy
 retrieval, provider-neutral tool calling and independently checked explanations.
-All published demonstration data and policies in this candidate are fictional.
+The Slack interface provides single-account reviews over a fictional dataset.
+All demonstration data and policies are independently invented for this project.
 
 The default dataset contains **72 accounts and 1,380 monthly observations** in
 three fictional markets. Dates are generated directly from 1990–1991. Scores use
@@ -10,7 +11,7 @@ an independently chosen 0–449 scale; bins are `1 + score // 50`.
 
 ## Offline setup on Windows
 
-Run from this new project's root in PowerShell. Keep the original project intact.
+Run from the project root in PowerShell using Python 3.11 or 3.12.
 
 ```powershell
 py -3.11 -m venv .venv
@@ -79,13 +80,54 @@ remain usable through score tools and explicitly scoped policy evaluation.
 - [Data provenance and numerical rules](docs/DATA_PROVENANCE.md)
 - [Architecture and test boundaries](docs/ARCHITECTURE.md)
 - [Migration review and exclusions](docs/MIGRATION_REVIEW.md)
-- [Candidate validation evidence](docs/VALIDATION.md)
+- [Validation evidence](docs/VALIDATION.md)
 - [Experimental policies](experiments/policies/README.md)
 
 Live adapters and the Slack interface are retained, including request budgets,
 pacing, scoped tool dispatch and fail-closed handling. Live operation is opt-in
 and is not required for this walkthrough or the migration checks.
 
-This is the first integrated review candidate. It has no Git history. Complete
-local review and validation before initializing or publishing a new repository;
-the old private repository is left intact.
+## Slack interface
+
+With an existing Slack app configured for Socket Mode and app mentions, set
+`SLACK_BOT_TOKEN`, `SLACK_APP_TOKEN` and `SLACK_ALLOWED_CHANNEL_ID` in your local
+ignored `.env` file. Use `.env.example` for the variable names; never commit tokens.
+Start the listener with:
+
+```powershell
+$py = ".\.venv\Scripts\python.exe"
+$env:POLICY_VERSION = "v1.0"
+& $py -m scripts.run_slack_review_83
+```
+
+In the configured channel, mention your bot followed by:
+
+```text
+review account 1000008 as of 1991-12
+```
+
+The default mode connects to Slack and runs local database scans. It makes no
+LLM calls. Optional generated notes require explicit live-provider options and
+remain subject to request budgets and the publication gate.
+The synthetic Slack round trip was demonstrated on 2026-10-24: account
+`1000008`, as of December 1991, produced warning, analyst-referral and
+committee-review indications with complete baseline coverage. No LLM was called.
+
+![Synthetic account review in Slack showing committee review and live LLM notes disabled](docs/images/slack_synthetic_review.png)
+
+*Actual Slack demonstration using fictional data and a local database scan;
+no generated LLM note or automated credit decision.*
+
+See the [demonstration guide](docs/PORTFOLIO_DEMO.md) to reproduce the walkthrough.
+
+## Verification checkpoint
+
+The owner completed local Windows validation and confirmed four successful
+hosted CI jobs (Ubuntu/Windows, Python 3.11/3.12) for the fresh root commit
+`6586c3e` on 2026-10-24. See [validation evidence](docs/VALIDATION.md) for scope.
+This educational demonstration does not establish real-world risk calibration
+or authorize credit decisions.
+
+`EXPORT_MANIFEST.json` records the original migration export snapshot, available
+at commit `6586c3e`. Subsequent documentation updates do not change that historical
+snapshot or its hashes.
