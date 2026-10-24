@@ -131,3 +131,8 @@ or authorize credit decisions.
 `EXPORT_MANIFEST.json` records the original migration export snapshot, available
 at commit `6586c3e`. Subsequent documentation updates do not change that historical
 snapshot or its hashes.
+
+## License
+
+Project software and associated documentation are provided under the
+[MIT License](LICENSE). Third-party dependencies retain their own licenses.
