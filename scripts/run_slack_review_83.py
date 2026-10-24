@@ -28,6 +28,7 @@ def settings():
 def parse_options(argv=None):
     parser = argparse.ArgumentParser(description='Local Slack reviews; live notes are opt-in.')
     parser.add_argument('--confirm-live', action='store_true')
+    parser.add_argument('--no-charts', action='store_true', help='Send text only; do not render or upload charts')
     parser.add_argument('--provider', choices=['gemini', 'anthropic'])
     parser.add_argument('--daily-remaining', type=int)
     parser.add_argument('--max-requests', type=int, default=8, help='Total session SDK request cap, 1..500')
@@ -82,11 +83,12 @@ def main():
     handler = None
     try:
         app = App(client=web)
-        register_listener(app, SlackReviewListener(service, values['SLACK_ALLOWED_CHANNEL_ID']))
+        register_listener(app, SlackReviewListener(service, values['SLACK_ALLOWED_CHANNEL_ID'],
+                                                   charts_enabled=not args.no_charts))
         handler = SocketModeHandler(app, values['SLACK_APP_TOKEN'])
         mode = (f'live notes enabled; provider={args.provider}; session request allowance={service.remaining}'
                 if args.confirm_live else 'local scans only; live notes disabled')
-        print(f'Starting Score Copilot: market 1; {mode}. Ctrl+C stops it.', flush=True)
+        print(f'Starting Score Copilot: market 1; {mode}; charts={"off" if args.no_charts else "on"}. Ctrl+C stops it.', flush=True)
         if service.log_dir is not None:
             print(f'Slack session ID: {service.log_dir.name}', flush=True)
             print(f'Request logs: {service.log_dir}', flush=True)

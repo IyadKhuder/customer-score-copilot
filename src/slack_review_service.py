@@ -11,6 +11,7 @@ from uuid import uuid4
 from src.batch_scan import ROOT, scan_batch, validate_request
 from src.request_budget import RequestBudget
 from src.slack_summary import describe_scan
+from src.score_chart import prepare_chart
 
 USAGE = 'Use: review account 1000008 as of 1991-12 (market 1 only). Each request is independent.'
 
@@ -36,7 +37,7 @@ class ReviewService:
     """Own a serial session allowance; client_factory returns (fresh adapter, kind).
 
     Call review with command text only. Returned dictionaries contain a public
-    projection, never tool evidence, private audits or raw exception messages.
+    projection with bounded chart observations, never private audits or raw exceptions.
     Session allowance is operator-declared, not provider-wide usage.
     """
     def __init__(self, db_path, *, source_root=ROOT, client_factory=None,
@@ -90,6 +91,12 @@ class ReviewService:
                       score_summary=describe_scan(result),
                       note=dict(status='not_requested', publishable=False, answer=None,
                                 reason_codes=[], next_action='none'))
+        # Optional display data must not prevent the completed review or its note.
+        try:
+            public['chart'] = prepare_chart(result)
+        except Exception:
+            public['chart'] = None
+            public['chart_unavailable'] = True
         if result['scan_outcome'] != 'attention_required':
             return public
         note = public['note']

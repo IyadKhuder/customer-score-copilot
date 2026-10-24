@@ -1,3 +1,5 @@
 # Optional local Slack interface, including the runtime.
 -r requirements.txt
 slack-bolt==1.29.0
+# Local, headless PNG rendering for Slack score charts.
+matplotlib==3.10.8

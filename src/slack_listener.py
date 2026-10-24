@@ -6,6 +6,7 @@ from time import monotonic, sleep
 import re
 
 from src.slack_review_service import parse_request, USAGE
+from src.score_chart import render_chart
 
 
 OUTCOMES = {
@@ -109,9 +110,10 @@ class SlackReviewListener:
     In-flight entries are never evicted. Expired/evicted events may execute again.
     """
     def __init__(self, service, allowed_channel, *, clock=monotonic, sleeper=sleep,
-                 ttl=3600, capacity=1000):
+                 ttl=3600, capacity=1000, charts_enabled=True):
         if not allowed_channel or type(capacity) is not int or capacity < 1 or ttl <= 0:
             raise ValueError('Require channel and positive cache bounds')
+        self.charts_enabled = charts_enabled
         self.service, self.channel = service, allowed_channel
         self.clock, self.sleep, self.ttl, self.capacity = clock, sleeper, ttl, capacity
         self.events = OrderedDict()
@@ -173,6 +175,7 @@ class SlackReviewListener:
             send('Checking the account history. An AI-generated note will be shown only if it passes verification.'
                  if getattr(self.service, 'factory', None) is not None
                  else 'Checking the account history. No LLM will be called.')
+            result = None
             try:
                 result = self.service.review(command)
                 answer = format_result(result)
@@ -181,6 +184,28 @@ class SlackReviewListener:
                 answer = 'The local review could not be completed. Check the local setup; no automatic retry was made.'
             self.sleep(1.1)
             send(answer)
+            if self.charts_enabled and result is not None:
+                chart = result.get('chart')
+                if chart is not None:
+                    try:
+                        png = render_chart(chart)
+                        self.sleep(1.1)
+                        uploaded = client.files_upload_v2(
+                            channel=self.channel, thread_ts=thread, file=png,
+                            filename=f"score_{chart['account_id']}_{chart['as_of_period'][:7]}.png",
+                            title=f"Account {chart['account_id']} | monthly scores | {chart['as_of_period'][:7]}",
+                            alt_txt=f"Synthetic score history for account {chart['account_id']}. "
+                                    "Twelve calendar months, score scale 0 to 449. Gaps are missing observations.",
+                        )
+                        if not uploaded.get('ok', False):
+                            raise RuntimeError('Chart upload was not confirmed')
+                    except Exception:
+                        logger.error('Chart rendering or upload failed; the completed review was not repeated.')
+                        send('The text review is complete, but the chart could not be attached. '
+                             'Check chart dependencies, Slack file-upload permission and connectivity. '
+                             'No automatic retry was made.')
+                elif result.get('chart_unavailable'):
+                    send('The text review is complete, but its chart data could not be prepared.')
         except Exception:
             # A delivery failure never reruns the service or includes exception text.
             logger.error('Slack reply delivery failed. The review will not be regenerated automatically.')
