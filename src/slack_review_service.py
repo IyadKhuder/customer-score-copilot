@@ -10,6 +10,7 @@ from uuid import uuid4
 
 from src.batch_scan import ROOT, scan_batch, validate_request
 from src.request_budget import RequestBudget
+from src.slack_summary import describe_scan
 
 USAGE = 'Use: review account 1000008 as of 1991-12 (market 1 only). Each request is independent.'
 
@@ -86,6 +87,7 @@ class ReviewService:
                       reason_codes=list(result['reason_codes']), next_action=result['next_action'],
                       coverage_complete=result['coverage_complete'],
                       missing_baseline_months=list(result['missing_baseline_months']),
+                      score_summary=describe_scan(result),
                       note=dict(status='not_requested', publishable=False, answer=None,
                                 reason_codes=[], next_action='none'))
         if result['scan_outcome'] != 'attention_required':

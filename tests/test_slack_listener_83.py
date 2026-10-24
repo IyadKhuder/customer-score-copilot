@@ -45,7 +45,7 @@ def test_valid_threaded_and_duplicate():
     run(body); run(body)
     assert service.calls==1 and len(client.sent)==2
     assert all(m['thread_ts']=='parent' for m in client.sent)
-    assert 'Warning signal triggered' in client.sent[-1]['text']
+    assert 'The score movements meet a warning rule' in client.sent[-1]['text']
     assert 'No LLM was called' in client.sent[-1]['text']
     assert all(m['mrkdwn'] is False and m['parse']=='none' and m['link_names'] is False for m in client.sent)
 
@@ -161,5 +161,5 @@ def test_real_service_offline_scan(tmp_path):
     service=ReviewService(tmp_path/'scores.db')
     _,client,_,run,_=setup(service)
     run(event())
-    assert 'WARNING_SIGNAL_TRIGGERED' in client.sent[-1]['text']
+    assert 'The score movements meet a warning rule' in client.sent[-1]['text']
     assert 'No LLM was called' in client.sent[-1]['text']

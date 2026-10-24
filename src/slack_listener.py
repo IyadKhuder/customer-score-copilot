@@ -9,49 +9,78 @@ from src.slack_review_service import parse_request, USAGE
 
 
 OUTCOMES = {
-    'attention_required': 'Attention required: a supported review indication or data-quality flag was found.',
-    'no_signal_in_scope': 'No signal within this scan\'s scope. This is not comprehensive policy clearance.',
-    'insufficient_data': 'Insufficient evidence for this scoped assessment.',
-    'unsupported': 'Unsupported account history: this demo supports market 1 only.',
-    'failed': 'The review could not be completed.',
+    'attention_required': 'Review outcome: follow-up is needed.',
+    'no_signal_in_scope': 'Review outcome: no warning or escalation was found by this scan. This is not an all-clear assessment.',
+    'insufficient_data': 'Review outcome: there is not enough information to complete this review.',
+    'unsupported': 'This account is outside this demo’s supported market (market 1).',
+    'failed': 'The review could not be completed. Check the local data and setup.',
 }
 REASONS = {
-    'WARNING_SIGNAL_TRIGGERED': 'Warning signal triggered',
-    'DATA_QUALITY_REVIEW_REQUIRED': 'Data-quality review required',
-    'COMMITTEE_REVIEW_INDICATED': 'Committee review indicated',
-    'ANALYST_REFERRAL_INDICATED': 'Analyst referral indicated',
-    'SIGNAL_PENDING_DATA_QUALITY': 'Signal pending data-quality review',
+    'NO_HISTORY_AS_OF': 'This account exists, but no observations are available on or before the requested month.',
+    'MISSING_AS_OF_OBSERVATION': 'This account exists, but its observation for the requested month is missing.',
+    'WARNING_SIGNAL_TRIGGERED': 'The score movements meet a warning rule and need review.',
+    'DATA_QUALITY_REVIEW_REQUIRED': 'Check the recorded data before interpreting the score movements.',
+    'COMMITTEE_REVIEW_INDICATED': 'The escalation rules call for committee review.',
+    'ANALYST_REFERRAL_INDICATED': 'The escalation rules also call for an analyst review.',
+    'SIGNAL_PENDING_DATA_QUALITY': 'Some potential warning signals are on hold until the data is checked.',
+    'INCOMPLETE_BASELINE': 'Some months needed for the full review are missing.',
+}
+ACTIONS = {
+    'none': 'No follow-up is indicated by this scan.',
+    'review_warning_signal': 'Ask an analyst to review the detected warning.',
+    'committee_review': 'Refer the account for committee review.',
+    'analyst_review': 'Refer the account to an analyst.',
+    'data_quality_review': 'Verify the suspect observations, correct them if necessary, and repeat the review.',
+    'gather_evidence': 'Check or supply the missing monthly observations, then repeat the review.',
+    'use_supported_market': 'Use an account from market 1.',
+    'repair_history': 'Check and repair the account history before trying again.',
+    'inspect_error': 'Inspect the local setup and diagnostics.',
+    'inspect_local_sources': 'Check the local database and policy files.',
 }
 
 
 def format_result(result):
-    """Reviewed templates over the service's public projection only."""
+    """Plain-language templates; private evidence and unpublished drafts stay hidden."""
     status = result['status']
     if status in ('invalid_request', 'help'):
         return USAGE
     if status == 'busy':
         return 'A review is running. Try again after it finishes.'
-    lines = [f"Account {result['account_id']} | as of {result['as_of_period'][:7]} | market 1",
-             OUTCOMES.get(status, 'The review could not be completed.')]
+    if 'ACCOUNT_NOT_FOUND' in result.get('reason_codes', []):
+        return (f"Account ID {result['account_id']} was not found in the current database. "
+                "Please verify the account ID and try again.")
+    lines = [f"Account {result['account_id']} | review month: {result['as_of_period'][:7]} | market 1"]
+    lines.extend(result.get('score_summary', []))
+    lines.extend(['', OUTCOMES.get(status, 'The review could not be completed.')])
     for code in result.get('reason_codes', []):
-        lines.append(f"Reason: {REASONS.get(code, code)} ({code})" if code in REASONS else f'Reason: {code}')
+        if code in REASONS:
+            lines.append(REASONS[code])
     coverage = result.get('coverage_complete')
     if coverage is not None:
-        lines.append('Required scan baseline: ' + ('complete' if coverage else 'incomplete'))
+        lines.append('Data available for the required review period: ' + ('complete.' if coverage else 'incomplete.'))
     if result.get('missing_baseline_months'):
-        lines.append('Missing baseline months: ' + ', '.join(result['missing_baseline_months']))
-    lines.append('Next step: ' + result.get('next_action', 'manual_review').replace('_', ' '))
+        lines.append('Missing months: ' + ', '.join(p[:7] for p in result['missing_baseline_months']))
+    lines.append('Next step: ' + ACTIONS.get(result.get('next_action'), 'Ask an analyst to inspect the local review result.'))
     note = result.get('note', {})
     if note.get('status') == 'published' and note.get('publishable') is True and note.get('answer'):
         lines.extend(['', 'Verified note', note.get('scope_description') or 'Only the stated verified claim scope is covered.', note['answer']])
     elif 'LIVE_NOTES_DISABLED' in note.get('reason_codes', []):
-        lines.extend(['', 'Verified note not requested: live LLM notes are disabled. No LLM was called.'])
+        lines.extend(['', 'AI-generated note: disabled. No LLM was called.'])
     elif status == 'attention_required':
-        lines.extend(['', 'Verified note unavailable.'])
-        lines.extend('Note reason: ' + code for code in note.get('reason_codes', []))
+        reasons = note.get('reason_codes', [])
+        if 'REQUEST_BUDGET_EXHAUSTED' in reasons:
+            message = 'the configured request allowance has been used up.'
+        elif note.get('status') == 'blocked':
+            message = 'the draft did not pass all publication checks.'
+        elif note.get('status') == 'failed':
+            message = 'the note could not be generated or verified.'
+        else:
+            message = 'no verified note is available for this review.'
+        lines.extend(['', 'AI-generated note unavailable: ' + message])
     if 'requests_started' in result:
-        lines.append(f"Provider requests this review: {result['requests_started']}; session allowance remaining: {result['session_requests_remaining']}")
-    lines.extend(['', 'Scope: single-account market-1 scan; no causal explanation or credit action is authorized.'])
+        lines.append(f"LLM requests used: {result['requests_started']}; session allowance remaining: {result['session_requests_remaining']}")
+    lines.extend(['', 'This describes recorded score movements and selected review rules for market 1. '
+                  'It does not explain their cause, establish recovery eligibility, or authorize a credit decision.'])
     return '\n'.join(lines)
 
 
@@ -141,9 +170,9 @@ class SlackReviewListener:
             if not acquired:
                 send('A review is running. Try again after it finishes.')
                 return
-            send('Reviewing the account snapshot. A bounded verified note may be attempted.'
+            send('Checking the account history. An AI-generated note will be shown only if it passes verification.'
                  if getattr(self.service, 'factory', None) is not None
-                 else 'Reviewing the account snapshot. Live LLM notes are disabled.')
+                 else 'Checking the account history. No LLM will be called.')
             try:
                 result = self.service.review(command)
                 answer = format_result(result)

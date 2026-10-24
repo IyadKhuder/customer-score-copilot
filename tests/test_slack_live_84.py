@@ -58,7 +58,7 @@ def test_bad_config_sanitized(tmp_path,monkeypatch):
     assert 'PRIVATE' not in str(caught.value)
 
 
-@pytest.mark.parametrize('mode,expected', [('pass','Verified note\n'),('wrong_score','Verified note unavailable'),('error','Verified note unavailable')])
+@pytest.mark.parametrize('mode,expected', [('pass','Verified note\n'),('wrong_score','AI-generated note unavailable'),('error','AI-generated note unavailable')])
 def test_transport_to_real_verification_with_fake_sdk(tmp_path,mode,expected):
     r=report(tmp_path)
     logs=tmp_path/'logs';logs.mkdir()
@@ -75,11 +75,11 @@ def test_transport_to_real_verification_with_fake_sdk(tmp_path,mode,expected):
     listener.handle(body,{'bot_user_id':'BOT'},client,logger)
     listener.handle(body,{'bot_user_id':'BOT'},client,logger)
     text='\n'.join(m['text'] for m in client.sent)
-    assert 'bounded verified note may be attempted' in text
-    assert expected in text and 'Warning signal triggered' in text
+    assert 'An AI-generated note will be shown only if it passes verification' in text
+    assert expected in text and 'The score movements meet a warning rule' in text
     assert 'PRIVATE' not in text and 'Live LLM notes are disabled' not in text
     assert len(sdks)==1 and service.remaining==4-sdks[0].calls
-    assert 'Provider requests this review:' in text
+    assert 'LLM requests used:' in text
     log_text=''.join(p.read_text() for p in logs.iterdir())
     assert 'PRIVATE' not in log_text and 'account' not in log_text
     entries=[json.loads(line) for line in log_text.splitlines()]
