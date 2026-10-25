@@ -65,23 +65,31 @@ def test_transport_to_real_verification_with_fake_sdk(tmp_path,mode,expected):
     now=[0.0];sdks=[]
     def factory():
         sdk=SDK(r,mode=mode);sdk.close=lambda:None;sdks.append(sdk)
+        original_create=sdk.chat.completions.create
+        def checked_create(**kwargs):
+            assert 'George' not in str(kwargs['messages'])
+            return original_create(**kwargs)
+        sdk.chat.completions.create=checked_create
         return OpenAICompatibleClient(sdk,'offline'), 'openai_compatible'
     service=ReviewService(tmp_path/'scores.db',client_factory=factory,daily_remaining=4,
                           session_max_requests=4,log_dir=logs,clock=lambda:now[0],
                           sleeper=lambda t:now.__setitem__(0,now[0]+t))
     client=Client();errors=[]
     listener=SlackReviewListener(service,'C1',sleeper=lambda _:None)
-    body=event();logger=SimpleNamespace(error=lambda text:errors.append(text))
+    client.users_info=lambda **kw: {'ok':True,'user':{'profile':{'display_name':'George'}}}
+    body=event();body['event']['user']='U1';logger=SimpleNamespace(error=lambda text:errors.append(text))
     listener.handle(body,{'bot_user_id':'BOT'},client,logger)
     listener.handle(body,{'bot_user_id':'BOT'},client,logger)
     text='\n'.join(m['text'] for m in client.sent)
     assert 'An AI-generated note will be shown only if it passes verification' in text
     assert expected in text and 'The score movements meet a warning rule' in text
     assert 'PRIVATE' not in text and 'Live LLM notes are disabled' not in text
+    assert client.sent[0]['text'].startswith('Hi George,\n\n')
     assert len(sdks)==1 and service.remaining==4-sdks[0].calls
     assert 'LLM requests used:' in text
     log_text=''.join(p.read_text() for p in logs.iterdir())
     assert 'PRIVATE' not in log_text and 'account' not in log_text
+    assert 'George' not in log_text
     entries=[json.loads(line) for line in log_text.splitlines()]
     assert sum(e['event']=='request_start' for e in entries)==sdks[0].calls
     assert not errors

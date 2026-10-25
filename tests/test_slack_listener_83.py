@@ -165,3 +165,77 @@ def test_real_service_offline_scan(tmp_path):
     delivered = '\n'.join(message['text'] for message in client.sent)
     assert 'The score movements meet a warning rule' in delivered
     assert 'No LLM was called' in delivered
+
+
+@pytest.mark.parametrize('profile,expected', [
+    ({'display_name':'George','real_name':'Other'}, 'Hi George,'),
+    ({'display_name':'  ','real_name':'George Smith'}, 'Hi George Smith,'),
+    ({'display_name':None,'real_name':'George'}, 'Hi George,'),
+    ({}, 'Hi,'),
+    ({'display_name':'*George*\n<!channel> <@U123> & `hi`\u202e'},
+     'Hi George &lt;!channel&gt; &lt;@U123&gt; &amp; hi,'),
+])
+def test_personalized_acknowledgement_only(profile,expected):
+    service,client,_,run,errors=setup()
+    lookups=[];commands=[];original=service.review
+    client.users_info=lambda **kw: lookups.append(kw) or {'ok':True,'user':{'profile':profile}}
+    service.review=lambda command: commands.append(command) or original(command)
+    body=event();body['event'].update(user='U1',thread_ts='parent')
+    run(body);run(body)
+    assert client.sent[0]['text'].startswith(expected+'\n\nChecking')
+    assert not client.sent[1]['text'].startswith('Hi')
+    assert lookups==[{'user':'U1'}]
+    assert commands==['review account 1 as of 2025-02'] and service.calls==1
+    assert all(m['thread_ts']=='parent' for m in client.sent) and not errors
+
+
+@pytest.mark.parametrize('response', [None, {'ok':False}, {'ok':True,'user':None},
+                                     {'ok':True,'user':{'profile':None}}])
+def test_name_lookup_failure_preserves_review(response):
+    service,client,_,run,errors=setup()
+    def lookup(**kw):
+        if response is None: raise RuntimeError('PRIVATE profile token')
+        return response
+    client.users_info=lookup
+    body=event();body['event']['user']='U1';run(body)
+    assert client.sent[0]['text'].startswith('Hi,\n\n')
+    assert service.calls==1 and len(client.sent)==2 and not errors
+    assert 'PRIVATE' not in str(client.sent)
+
+
+def test_name_cache_expiry_capacity_and_failed_lookup_cache():
+    now=[0];_,client,listener,_,_=setup(clock=lambda:now[0],name_ttl=10,name_capacity=2)
+    calls=[]
+    client.users_info=lambda **kw:calls.append(kw['user']) or {'ok':False}
+    assert listener._greeting('U1',client)=='Hi,'
+    listener._greeting('U1',client)
+    listener._greeting('U2',client);listener._greeting('U3',client)
+    assert len(listener.names)==2 and 'U1' not in listener.names
+    now[0]=11;listener._greeting('U3',client)
+    assert calls==['U1','U2','U3','U3'] and len(listener.names)==1
+    assert listener._greeting(None,client)=='Hi,'
+
+
+def test_profile_username_fallback_and_length():
+    _,client,listener,_,_=setup()
+    client.users_info=lambda **kw:{'ok':True,'user':{'name':'george'}}
+    assert listener._greeting('U1',client)=='Hi george,'
+    assert len(listener._display_name('x'*200))==80
+
+
+@pytest.mark.parametrize('kwargs',[{'name_ttl':0},{'name_ttl':float('nan')},
+                                   {'name_ttl':float('inf')},{'name_capacity':0}])
+def test_invalid_name_cache_bounds(kwargs):
+    with pytest.raises(ValueError):setup(**kwargs)
+
+
+def test_rejected_commands_do_not_lookup_names():
+    _,client,listener,run,_=setup()
+    client.users_info=lambda **kw:pytest.fail('unexpected lookup')
+    body=event();body['event'].update(user='U1',channel='C2');run(body)
+    body=event('E2',text='<@BOT> help');body['event']['user']='U1';run(body)
+    listener.analysis_lock.acquire()
+    try:
+        body=event('E3');body['event']['user']='U1';run(body)
+    finally:
+        listener.analysis_lock.release()

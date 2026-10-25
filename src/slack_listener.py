@@ -4,6 +4,7 @@ from html import escape
 from threading import Lock
 from time import monotonic, sleep
 import re
+import unicodedata
 
 from src.slack_review_service import parse_request, USAGE
 from src.score_chart import render_chart
@@ -110,14 +111,61 @@ class SlackReviewListener:
     In-flight entries are never evicted. Expired/evicted events may execute again.
     """
     def __init__(self, service, allowed_channel, *, clock=monotonic, sleeper=sleep,
-                 ttl=3600, capacity=1000, charts_enabled=True):
+                 ttl=3600, capacity=1000, charts_enabled=True, name_ttl=300, name_capacity=256):
         if not allowed_channel or type(capacity) is not int or capacity < 1 or ttl <= 0:
             raise ValueError('Require channel and positive cache bounds')
+        if type(name_capacity) is not int or name_capacity < 1 or not 0 < name_ttl < float('inf'):
+            raise ValueError('Require positive finite name cache bounds')
+        self.name_ttl, self.name_capacity = name_ttl, name_capacity
+        self.names = OrderedDict()
+        self.name_lock = Lock()
         self.charts_enabled = charts_enabled
         self.service, self.channel = service, allowed_channel
         self.clock, self.sleep, self.ttl, self.capacity = clock, sleeper, ttl, capacity
         self.events = OrderedDict()
         self.cache_lock, self.analysis_lock = Lock(), Lock()
+
+    @staticmethod
+    def _display_name(value):
+        """Bound untrusted profile text; send() escapes Slack control characters."""
+        if not isinstance(value, str):
+            return ''
+        # Remove controls (including bidi overrides), collapse lines and whitespace.
+        value = ''.join(' ' if unicodedata.category(c).startswith('C') else c for c in value)
+        value = ' '.join(value.split())
+        # Plain-text transport disables markup; remove markup delimiters as well.
+        return value.translate(str.maketrans('', '', '*_~`'))[:80].strip()
+
+    def _greeting(self, user_id, client):
+        if not isinstance(user_id, str) or not user_id:
+            return 'Hi,'
+        with self.name_lock:
+            now = self.clock()
+            for key, (expiry, _) in list(self.names.items()):
+                if expiry <= now:
+                    del self.names[key]
+            if user_id in self.names:
+                return self.names[user_id][1]
+        name = ''
+        try:
+            response = client.users_info(user=user_id)
+            if response.get('ok', False):
+                user = response.get('user', {})
+                profile = user.get('profile', {})
+                for candidate in (profile.get('display_name'), profile.get('real_name'),
+                                  user.get('real_name'), user.get('name')):
+                    name = self._display_name(candidate)
+                    if name:
+                        break
+        except Exception:
+            # Profile failures and private SDK diagnostics never reach review evidence.
+            pass
+        greeting = f'Hi {name},' if name else 'Hi,'
+        with self.name_lock:
+            if user_id not in self.names and len(self.names) >= self.name_capacity:
+                self.names.popitem(last=False)
+            self.names[user_id] = (self.clock() + self.name_ttl, greeting)
+        return greeting
 
     def _claim(self, event_id):
         with self.cache_lock:
@@ -172,9 +220,10 @@ class SlackReviewListener:
             if not acquired:
                 send('A review is running. Try again after it finishes.')
                 return
-            send('Checking the account history. An AI-generated note will be shown only if it passes verification.'
+            greeting = self._greeting(event.get('user'), client)
+            send(greeting + '\n\n' + ('Checking the account history. An AI-generated note will be shown only if it passes verification.'
                  if getattr(self.service, 'factory', None) is not None
-                 else 'Checking the account history. No LLM will be called.')
+                 else 'Checking the account history. No LLM will be called.'))
             result = None
             try:
                 result = self.service.review(command)

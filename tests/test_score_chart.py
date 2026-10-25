@@ -116,7 +116,7 @@ class UploadClient(Client):
         return {'ok':True}
 
 
-def transport(service,client,monkeypatch,*,disabled=False,render_failure=False):
+def transport(service,client,monkeypatch,*,disabled=False,render_failure=False,lookup_failure=False):
     import src.slack_listener as module
     calls=[];original=service.review
     def once(text):calls.append(text);return original(text)
@@ -126,10 +126,17 @@ def transport(service,client,monkeypatch,*,disabled=False,render_failure=False):
         monkeypatch.setattr(module,'render_chart',bad)
     listener=SlackReviewListener(service,'C1',sleeper=lambda _:None,charts_enabled=not disabled)
     body=event(text='<@BOT> review account 1000008 as of 1991-12')
-    body['event']['thread_ts']='parent';errors=[]
+    body['event'].update(thread_ts='parent', user='U1');errors=[]
+    def lookup(**kwargs):
+        if client.fail or lookup_failure:
+            raise RuntimeError('PRIVATE profile failure')
+        return {'ok':True,'user':{'profile':{'display_name':'George'}}}
+    client.users_info=lookup
     listener.handle(body,{'bot_user_id':'BOT'},client,SimpleNamespace(error=errors.append))
     listener.handle(body,{'bot_user_id':'BOT'},client,SimpleNamespace(error=errors.append))
     assert len(calls)==1
+    expected = 'Hi,' if client.fail or lookup_failure else 'Hi George,'
+    assert client.sent[0]['text'].startswith(expected+'\n\n')
     assert 'PRIVATE' not in str(client.sent)+str(errors)
     assert any('severe score drop' in m['text'] for m in client.sent)
     return errors
@@ -226,3 +233,9 @@ def test_unknown_id_and_text_delivery_failure_never_upload(service,monkeypatch):
                     {'bot_user_id':'BOT'},client,SimpleNamespace(error=errors.append))
     assert not client.uploads
     assert 'PRIVATE' not in str(errors)
+
+
+def test_profile_failure_preserves_successful_chart_upload(service,monkeypatch):
+    client=UploadClient()
+    assert transport(service,client,monkeypatch,lookup_failure=True)==[]
+    assert len(client.uploads)==1
