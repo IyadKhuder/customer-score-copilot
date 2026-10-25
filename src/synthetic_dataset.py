@@ -21,6 +21,15 @@ from .synthetic_foundations import (
 )
 
 GENERATOR_VERSION = "synthetic-generator-1"
+# Keep the existing background stream stable; optional showcase shapes are fixed.
+SHOWCASE_SHAPES = {
+    25: ("drop_then_recovery", (346, 351, 347, 350, 220, 229, 241, 238, 256, 273, 291, 309)),
+    26: ("rise_then_decline", (220, 224, 219, 222, 352, 343, 331, 334, 316, 299, 281, 263)),
+}
+SHOWCASE_DESCRIPTIONS = {
+    "drop_then_recovery": "Sharp drop followed by uneven gradual recovery; no reinstatement claim.",
+    "rise_then_decline": "Sharp rise followed by uneven gradual decline; no causal claim.",
+}
 STREAM_VERSION = "sha256-counter-modulo-1"
 CSV_FIELDS = ("account_id", "period", "score", "bin", "market")
 OUTPUT_NAMES = ("scores_extended.csv", "scenarios.json", "manifest.json")
@@ -43,8 +52,11 @@ class DatasetConfig:
     start_period: str = "1990-01-01"
     months: int = 24
     new_market_months: int = 12
+    showcase: bool = False
 
     def __post_init__(self):
+        if type(self.showcase) is not bool or (self.showcase and (self.accounts_per_market < 26 or self.new_market_months < 12)):
+            raise ValueError("showcase requires at least 26 accounts per market and 12 new-market months")
         if type(self.seed) is not int or not 0 <= self.seed <= 2**63 - 1:
             raise ValueError("seed must be an integer in 0..2**63-1, not bool")
         if (type(self.accounts_per_market) is not int
@@ -63,11 +75,13 @@ class DatasetConfig:
 
 
 def profile_config(profile="small", **overrides) -> DatasetConfig:
-    if profile not in ("small", "large"):
-        raise ValueError("profile must be small or large")
+    if profile not in ("small", "large", "showcase"):
+        raise ValueError("profile must be small, large or showcase")
     values = {} if profile == "small" else {
         "accounts_per_market": 1000, "start_period": "1987-01-01", "months": 60,
     }
+    if profile == "showcase":
+        values = {"accounts_per_market": 26, "showcase": True}
     values.update(overrides)
     return DatasetConfig(**values)
 
@@ -134,7 +148,13 @@ def build_account(config: DatasetConfig, market: int, ordinal: int):
         raise ValueError("ordinal outside configured account range")
     periods = market_calendar(config, market)
     definitions = tuple(ANCHORS.items())
-    if ordinal <= len(definitions):
+    if config.showcase and ordinal in SHOWCASE_SHAPES:
+        family, tail = SHOWCASE_SHAPES[ordinal]
+        scores = (tail[0],) * (len(periods) - len(tail)) + tail
+        rows = tuple(ScoreRow(market * 1_000_000 + ordinal, period, score, score_to_bin(score), market)
+                     for period, score in zip(periods, scores))
+        kind, shift, coverage = "showcase", 0, "complete"
+    elif ordinal <= len(definitions):
         family, definition = definitions[ordinal - 1]
         rows = build_anchor(family, market=market, start_period=periods[0], months=len(periods))
         kind, shift = "anchor", 0
@@ -159,8 +179,8 @@ def build_account(config: DatasetConfig, market: int, ordinal: int):
         "scheduled_months": len(periods), "observed_months": len(rows),
         "omitted_periods": [p for p in periods if p not in observed],
         "first_observed_period": rows[0].period, "last_observed_period": rows[-1].period,
-        "tail_periods": list(periods[-6:]), "score_shift": shift,
-        "description": ANCHORS[family].description,
+        "tail_periods": list(periods[-12:] if kind == "showcase" else periods[-6:]), "score_shift": shift,
+        "description": SHOWCASE_DESCRIPTIONS[family] if kind == "showcase" else ANCHORS[family].description,
     }
     return rows, metadata
 
@@ -277,7 +297,7 @@ def generate_dataset(config: DatasetConfig, output_directory: Path | str) -> dic
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--profile", choices=("small", "large"), default="small")
+    parser.add_argument("--profile", choices=("small", "large", "showcase"), default="small")
     parser.add_argument("--seed", type=int)
     parser.add_argument("--accounts-per-market", type=int)
     parser.add_argument("--start-period")

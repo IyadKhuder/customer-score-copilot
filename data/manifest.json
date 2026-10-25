@@ -8,6 +8,7 @@
     "months": 24,
     "new_market_months": 12,
     "seed": 1729,
+    "showcase": false,
     "start_period": "1990-01-01"
   },
   "files_sha256": {
@@ -73,7 +74,7 @@
     449
   ],
   "source_sha256": {
-    "synthetic_dataset.py": "47fa1ff65c49bf3f9dc1bf6ec4f92d27c4b5a6a65f5020fbb94a41f5f563bd05",
+    "synthetic_dataset.py": "dd98e2dd768655c9f4263088ef3c72a82300a75a8939606e655a75cca0e78bc5",
     "synthetic_foundations.py": "c9d5ecc248a2f00cfbf2ee6ee08103c2977ca995950c7560f7422a5dd6b946e8"
   },
   "stream_version": "sha256-counter-modulo-1"
