@@ -13,7 +13,14 @@ from src.request_budget import RequestBudget
 from src.slack_summary import describe_scan
 from src.score_chart import prepare_chart
 
-USAGE = 'Use: review account 1000008 as of 1991-12 (market 1 only). Each request is independent.'
+USAGE = (
+    "I can review one customer's recorded scores or look up this demo's policy rules.\n\n"
+    "Use: @Score Copilot review account [Account ID] as of YYYY-MM\n"
+    "Example: @Score Copilot review account 1000003 as of 1991-12\n"
+    "You can also ask: How did account 1000003 change as of December 1991?\n"
+    "Or: What does risk bin 6 mean?\n\n"
+    "Account reviews support market 1 only. Each request is independent."
+)
 
 
 def parse_request(text):

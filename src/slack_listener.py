@@ -6,8 +6,9 @@ from time import monotonic, sleep
 import re
 import unicodedata
 
-from src.slack_review_service import parse_request, USAGE
+from src.slack_review_service import USAGE
 from src.score_chart import render_chart
+from src.slack_conversation import prepare_message, policy_answer
 
 
 OUTCOMES = {
@@ -208,26 +209,34 @@ class SlackReviewListener:
                                         unfurl_links=False, unfurl_media=False)
         try:
             command = text[match.end():]
-            try:
-                request = parse_request(command)
-            except ValueError:
-                send(USAGE)
-                return
-            if request is None:
-                send(USAGE)
+            prepared = prepare_message(command)
+            if prepared.kind == 'message':
+                send(prepared.message)
                 return
             acquired = self.analysis_lock.acquire(blocking=False)
             if not acquired:
                 send('A review is running. Try again after it finishes.')
                 return
             greeting = self._greeting(event.get('user'), client)
+            if prepared.kind == 'policy':
+                send(greeting + '\n\nLooking up the selected demo policy. No LLM will be called.')
+                try:
+                    answer = policy_answer(prepared, source_root=getattr(self.service, 'root', None))
+                except Exception:
+                    logger.error('Policy lookup failed; private diagnostics were not sent to Slack.')
+                    answer = 'I could not retrieve the selected demo policy. Please check the local policy files or try another policy question.'
+                self.sleep(1.1)
+                send(answer)
+                return
             send(greeting + '\n\n' + ('Checking the account history. An AI-generated note will be shown only if it passes verification.'
                  if getattr(self.service, 'factory', None) is not None
                  else 'Checking the account history. No LLM will be called.'))
             result = None
             try:
-                result = self.service.review(command)
+                result = self.service.review(prepared.command)
                 answer = format_result(result)
+                if prepared.message:
+                    answer = prepared.message + '\n\n' + answer
             except Exception:
                 logger.error('Local review failed; private diagnostics were not sent to Slack.')
                 answer = 'The local review could not be completed. Check the local setup; no automatic retry was made.'
