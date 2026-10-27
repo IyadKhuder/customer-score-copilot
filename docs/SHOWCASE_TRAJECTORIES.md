@@ -93,10 +93,13 @@ No selected signal is not comprehensive clearance, reinstatement eligibility
 or confirmation of warning removal. Large upward movements can also trigger
 volatility-related warnings: direction alone does not determine the outcome.
 
-The public summary uses existing six-observation descriptions. Both December
-reviews may be called "mixed" because of the August reversal, while their
-12-month charts clearly show the larger trajectory. Scenario names are
-construction metadata, not privileged evidence supplied to the LLM.
+The public summary and chart now use the same 12 calendar months ending at the
+assessment month. The description identifies partial recovery after the drop
+for `1000025` and a rise followed by decline for `1000026`. Minor setbacks do not
+force either pattern to be called merely "mixed." Exact dates and point changes
+are reported; these are observational descriptions, not reinstatement decisions.
+Scenario names remain construction metadata, not privileged evidence supplied
+to the LLM. See [descriptive window details](DESCRIPTIVE_WINDOW.md).
 
 Tests cover unchanged existing accounts, deterministic regeneration, database
 verification, calendar shifts, actual policy outcomes, real chart rendering and

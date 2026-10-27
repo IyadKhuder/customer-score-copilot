@@ -121,7 +121,8 @@ def prepare_message(text):
             focus = 'This review describes observed score changes; it does not establish formal recovery or reinstatement eligibility.'
         elif re.search(r'\bwhy\b', lower):
             focus = 'This review explains selected rule indications from recorded movements, rather than the underlying cause of score changes.'
-        return PreparedMessage('review', command=command, message=focus)
+        return PreparedMessage('review', command=command, message=focus,
+                               topic='observed_recovery' if re.search(r'\brecover\w*\b', lower) else '')
     # Pronouns do not silently inherit another user's account or cutoff.
     if re.search(r'\b(?:did|has|is|was|will|can|does)\s+it\b|\bits\s+(?:score|warning)\b', lower):
         return _reply('Please include the account ID and assessment month. I do not carry account context between messages yet.\n\n' + USAGE)

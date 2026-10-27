@@ -3,6 +3,7 @@ from datetime import date
 from io import BytesIO
 from threading import Lock
 
+DISPLAY_MONTHS = 12
 _RENDER_LOCK = Lock()
 _KEYS = {'schema_version', 'account_id', 'as_of_period', 'periods', 'scores', 'quality_review'}
 
@@ -21,6 +22,12 @@ def _period(index):
     return f'{year:04d}-{month+1:02d}-01'
 
 
+def display_periods(as_of_period):
+    """Shared calendar for chart and descriptive summary; no policy semantics."""
+    end = _month(as_of_period)
+    return [_period(i) for i in range(end-DISPLAY_MONTHS+1, end+1)]
+
+
 def validate_chart(chart):
     """Reject malformed or off-scale data instead of silently clipping it."""
     if type(chart) is not dict or set(chart) != _KEYS:
@@ -32,7 +39,7 @@ def validate_chart(chart):
     end = _month(chart['as_of_period'])
     if end < 12:
         raise ValueError('Invalid chart calendar')
-    if chart['periods'] != [_period(i) for i in range(end-11, end+1)]:
+    if chart['periods'] != display_periods(chart['as_of_period']):
         raise ValueError('Chart must contain twelve consecutive calendar months')
     scores = chart['scores']
     if (type(scores) is not list or len(scores) != 12
@@ -52,11 +59,11 @@ def prepare_chart(result):
             or result.get('market') != 1 or 'ACCOUNT_NOT_FOUND' in result['reason_codes']):
         return None
     end = _month(result['as_of_period'])
-    periods = [_period(i) for i in range(end-11, end+1)]
+    periods = display_periods(result['as_of_period'])
     observed = {}
     for row in result['scan_evidence']:
         index = _month(row['period'])
-        if end-11 <= index <= end:
+        if end-DISPLAY_MONTHS+1 <= index <= end:
             if row['market'] != 1 or row['period'] in observed:
                 raise ValueError('Invalid chart observations')
             observed[row['period']] = row['score']

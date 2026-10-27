@@ -42,7 +42,7 @@ ACTIONS = {
 }
 
 
-def format_result(result):
+def format_result(result, *, recovery_question=False):
     """Plain-language templates; private evidence and unpublished drafts stay hidden."""
     status = result['status']
     if status in ('invalid_request', 'help'):
@@ -53,14 +53,21 @@ def format_result(result):
         return (f"Account ID {result['account_id']} was not found in the current database. "
                 "Please verify the account ID and try again.")
     lines = [f"Account {result['account_id']} | review month: {result['as_of_period'][:7]} | market 1"]
-    lines.extend(result.get('score_summary', []))
+    summary = result.get('score_summary', [])
+    recovery = result.get('observed_recovery_answer') if recovery_question else None
+    if recovery:
+        lines.extend(summary[:1])
+        lines.append(recovery)
+        lines.extend(summary[1:])
+    else:
+        lines.extend(summary)
     lines.extend(['', OUTCOMES.get(status, 'The review could not be completed.')])
     for code in result.get('reason_codes', []):
         if code in REASONS:
             lines.append(REASONS[code])
     coverage = result.get('coverage_complete')
     if coverage is not None:
-        lines.append('Data available for the required review period: ' + ('complete.' if coverage else 'incomplete.'))
+        lines.append('Data available for the required policy review period: ' + ('complete.' if coverage else 'incomplete.'))
     if result.get('missing_baseline_months'):
         lines.append('Missing months: ' + ', '.join(p[:7] for p in result['missing_baseline_months']))
     lines.append('Next step: ' + ACTIONS.get(result.get('next_action'), 'Ask an analyst to inspect the local review result.'))
@@ -234,9 +241,9 @@ class SlackReviewListener:
             result = None
             try:
                 result = self.service.review(prepared.command)
-                answer = format_result(result)
+                answer = format_result(result, recovery_question=prepared.topic == 'observed_recovery')
                 if prepared.message:
-                    answer = prepared.message + '\n\n' + answer
+                    answer = answer + '\n\n' + prepared.message
             except Exception:
                 logger.error('Local review failed; private diagnostics were not sent to Slack.')
                 answer = 'The local review could not be completed. Check the local setup; no automatic retry was made.'
