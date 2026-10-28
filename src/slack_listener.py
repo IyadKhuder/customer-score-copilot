@@ -1,6 +1,6 @@
 """Socket Mode listener logic, independently testable without Slack or network."""
 from collections import OrderedDict
-from html import escape
+from html import escape, unescape
 from threading import Lock
 from time import monotonic, sleep
 import re
@@ -9,6 +9,7 @@ import unicodedata
 from src.slack_review_service import USAGE
 from src.score_chart import render_chart
 from src.slack_conversation import prepare_message, policy_answer
+from src.slack_presentation import presentation_blocks
 
 
 OUTCOMES = {
@@ -211,9 +212,17 @@ class SlackReviewListener:
             for i, part in enumerate(message_parts(text)):
                 if i:
                     self.sleep(1.1)
+                # Keep the escaped plain fallback for notifications/accessibility.
+                # Blocks use native literal text, so names/prose cannot inject
+                # markdown, mentions, links or additional Block Kit elements.
+                try:
+                    blocks = presentation_blocks(unescape(part))
+                except Exception:
+                    blocks = None  # A local presentation failure must not lose text.
+                options = {'blocks': blocks} if blocks else {}
                 client.chat_postMessage(channel=self.channel, thread_ts=thread, text=part,
                                         mrkdwn=False, parse='none', link_names=False,
-                                        unfurl_links=False, unfurl_media=False)
+                                        unfurl_links=False, unfurl_media=False, **options)
         try:
             command = text[match.end():]
             prepared = prepare_message(command)
