@@ -22,3 +22,5 @@ var/
 
 # Never import an old base-data file into the clean project
 data/scores.csv
+
+/scripts/copy-patch.ps1
