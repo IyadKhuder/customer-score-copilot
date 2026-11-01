@@ -11,11 +11,12 @@ from typing import TypedDict
 from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
 from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.graph import END, START, StateGraph
-from langgraph.types import interrupt
+from langgraph.types import Command, interrupt
 
-from src.review_workflow import CaseStore, TransitionError, resume
+from src.review_workflow import (CaseStore, DEMO_REVIEWERS, TransitionError,
+                                 resume, validate_decision)
 
-GRAPH_VERSION = 'offline-review-graph-v1'
+GRAPH_VERSION = 'offline-review-graph-v2'
 
 
 class GraphState(TypedDict):
@@ -33,7 +34,7 @@ def checked_case(store, state):
     return case
 
 
-def build_graph(store, saver, analyzer=None):
+def build_graph(store, saver, analyzer=None, allowed_reviewers=DEMO_REVIEWERS):
     def analyze(state):
         checked_case(store, state)
         if analyzer is None:
@@ -49,12 +50,17 @@ def build_graph(store, saver, analyzer=None):
 
     def await_review(state):
         case = checked_case(store, state)
+        if case['workflow_status'] == 'completed':
+            # CaseStore.read already validates the durable decision. This branch
+            # repairs a graph whose decision write committed before checkpointing.
+            return {}
         if case['verification_status'] != 'passed' or case['analysis'] is None:
             raise TransitionError('Only a verified saved package can await review')
-        interrupt({'case_id': case['case_id'], 'package_hash': case['package_hash'],
+        payload = interrupt({'case_id': case['case_id'], 'package_hash': case['package_hash'],
                    'revision': case['revision'], 'scope': 'review package only',
-                   'message': 'Decision submission is introduced in M1.2.'})
-        raise TransitionError('Decision resume is not supported in M1.1')
+                   'message': 'Approve or reject this exact saved review package.'})
+        store.decide(case['case_id'], payload, allowed_reviewers)
+        return {}
 
     graph = StateGraph(GraphState)
     graph.add_node('analyze', analyze)
@@ -67,12 +73,12 @@ def build_graph(store, saver, analyzer=None):
 
 
 @contextmanager
-def open_graph(path, analyzer=None):
+def open_graph(path, analyzer=None, allowed_reviewers=DEMO_REVIEWERS):
     store = CaseStore(path)
     with SqliteSaver.from_conn_string(str(Path(path).resolve())) as saver:
         # Only plain serializable graph fields; never enable pickle fallback.
         saver.serde = JsonPlusSerializer(allowed_msgpack_modules=[])
-        yield store, build_graph(store, saver, analyzer)
+        yield store, build_graph(store, saver, analyzer, frozenset(allowed_reviewers))
 
 
 def config(case_id):
@@ -96,7 +102,8 @@ def inspect_case(store, graph, case_id):
     return {'case': case, 'graph': {'version': GRAPH_VERSION,
             'next_nodes': list(state.next),
             'checkpoint_id': state.config['configurable']['checkpoint_id'],
-            'waiting_for_review': case['workflow_status'] == 'awaiting_review'}}
+            'waiting_for_review': case['workflow_status'] == 'awaiting_review',
+            'completion_recovery_needed': case['workflow_status'] == 'completed' and bool(state.next)}}
 
 
 def resume_case(store, graph, case_id):
@@ -106,22 +113,60 @@ def resume_case(store, graph, case_id):
     # is safe to re-enter once: resume() returns saved analysis without rerun.
     if view['graph']['next_nodes'] == ['analyze']:
         graph.invoke(None, config(case_id), durability='sync')
+    elif view['graph']['completion_recovery_needed']:
+        if view['graph']['next_nodes'] != ['await_review']:
+            raise TransitionError('Unexpected graph position; inspect before recovery')
+        graph.invoke(Command(resume={'recovery': 'use_saved_decision'}),
+                     config(case_id), durability='sync')
+    return inspect_case(store, graph, case_id)
+
+
+def submit_decision(store, graph, case_id, payload, allowed_reviewers=DEMO_REVIEWERS):
+    view = inspect_case(store, graph, case_id)
+    validate_decision(view['case'], payload, allowed_reviewers)
+    state = graph.get_state(config(case_id))
+    pending = [item for task in state.tasks for item in task.interrupts]
+    if list(state.next) != ['await_review'] or len(pending) != 1:
+        raise TransitionError('Graph is not paused for a review decision')
+    value = pending[0].value
+    if (value.get('case_id') != case_id or value.get('revision') != payload['expected_revision']
+            or value.get('package_hash') != payload['package_hash']):
+        raise TransitionError('Interrupted review package does not match decision')
+    graph.invoke(Command(resume=payload), config(case_id), durability='sync')
     return inspect_case(store, graph, case_id)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--store', required=True)
-    parser.add_argument('command', choices=['create', 'show', 'resume'])
+    parser.add_argument('command', choices=['create', 'show', 'resume', 'decide'])
     parser.add_argument('case_id', nargs='?')
+    parser.add_argument('--decision', choices=['approved', 'rejected'])
+    parser.add_argument('--reviewer', help='Offline declared identity; demo-analyst is allowed')
+    parser.add_argument('--reason')
+    parser.add_argument('--expected-revision', type=int)
+    parser.add_argument('--package-hash')
     args = parser.parse_args()
     if args.command != 'create' and not args.case_id:
-        parser.error('show/resume requires case_id')
+        parser.error('show/resume/decide requires case_id')
+    values = [args.decision, args.reviewer, args.reason, args.expected_revision, args.package_hash]
+    if args.command == 'decide' and any(value is None for value in values):
+        parser.error('decide requires decision, reviewer, reason, expected-revision and package-hash')
+    if args.command != 'decide' and any(value is not None for value in values):
+        parser.error('Decision options are only valid with decide')
     try:
         with open_graph(args.store) as (store, graph):
-            result = create_case(store, graph) if args.command == 'create' else (
-                inspect_case(store, graph, args.case_id) if args.command == 'show'
-                else resume_case(store, graph, args.case_id))
+            if args.command == 'create':
+                result = create_case(store, graph)
+            elif args.command == 'show':
+                result = inspect_case(store, graph, args.case_id)
+            elif args.command == 'resume':
+                result = resume_case(store, graph, args.case_id)
+            else:
+                payload = dict(case_id=args.case_id, decision=args.decision, reviewer=args.reviewer,
+                               reason=args.reason, expected_revision=args.expected_revision,
+                               package_hash=args.package_hash)
+                result = submit_decision(store, graph, args.case_id, payload)
     except (TransitionError, sqlite3.Error) as exc:
         parser.exit(2, f'Workflow error: {exc}\n')
     print(json.dumps(result, indent=2))
