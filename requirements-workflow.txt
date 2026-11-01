@@ -1,0 +1,4 @@
+# Optional durable workflow; no provider calls or credentials needed.
+-r requirements.txt
+langgraph==1.2.19
+langgraph-checkpoint-sqlite==3.1.3

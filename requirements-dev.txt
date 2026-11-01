@@ -2,3 +2,6 @@
 -r requirements-slack.txt
 pytest==8.4.2
 pytest-subtests==0.14.2
+
+# Exercise optional workflow in the existing OS/Python CI matrix.
+-r requirements-workflow.txt
