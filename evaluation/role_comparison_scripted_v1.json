@@ -1,0 +1,489 @@
+{
+  "experiment_id": "numeric-role-comparison-scripted-v1",
+  "description": "Independently invented numeric fixtures. Manual expected publication labels; scripted reviewer outputs include deliberate misses and false alarms. Not model quality evidence.",
+  "cases": [
+    {
+      "case_id": "RC-001",
+      "description": "Valid score/bin, reviewer reports no concerns.",
+      "evidence": {
+        "request": {
+          "account_id": 1000001,
+          "period": "1991-12-01",
+          "market": 1
+        },
+        "observations": [
+          {
+            "evidence_id": "obs-1991-12",
+            "period": "1991-12-01",
+            "market": 1,
+            "score": 271,
+            "bin": 6
+          }
+        ]
+      },
+      "proposal": {
+        "answer": "Unpublished scripted draft; never use this text as the public answer.",
+        "score_claims": [
+          {
+            "account_id": 1000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "score",
+            "value": 271
+          },
+          {
+            "account_id": 1000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "bin",
+            "value": 6
+          }
+        ],
+        "policy_claims": [],
+        "limitations": []
+      },
+      "reviewer_response": {
+        "findings": []
+      },
+      "reviewer_raises": false,
+      "expected_publishable": true
+    },
+    {
+      "case_id": "RC-002",
+      "description": "Wrong score; reviewer misses it. Deterministic verifier must block.",
+      "evidence": {
+        "request": {
+          "account_id": 1000001,
+          "period": "1991-12-01",
+          "market": 1
+        },
+        "observations": [
+          {
+            "evidence_id": "obs-1991-12",
+            "period": "1991-12-01",
+            "market": 1,
+            "score": 271,
+            "bin": 6
+          }
+        ]
+      },
+      "proposal": {
+        "answer": "Unpublished scripted draft; never use this text as the public answer.",
+        "score_claims": [
+          {
+            "account_id": 1000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "score",
+            "value": 999
+          },
+          {
+            "account_id": 1000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "bin",
+            "value": 6
+          }
+        ],
+        "policy_claims": [],
+        "limitations": []
+      },
+      "reviewer_response": {
+        "findings": []
+      },
+      "reviewer_raises": false,
+      "expected_publishable": false
+    },
+    {
+      "case_id": "RC-003",
+      "description": "Missing bin; reviewer flags omission; composer also blocks.",
+      "evidence": {
+        "request": {
+          "account_id": 1000001,
+          "period": "1991-12-01",
+          "market": 1
+        },
+        "observations": [
+          {
+            "evidence_id": "obs-1991-12",
+            "period": "1991-12-01",
+            "market": 1,
+            "score": 271,
+            "bin": 6
+          }
+        ]
+      },
+      "proposal": {
+        "answer": "Unpublished scripted draft; never use this text as the public answer.",
+        "score_claims": [
+          {
+            "account_id": 1000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "score",
+            "value": 271
+          }
+        ],
+        "policy_claims": [],
+        "limitations": []
+      },
+      "reviewer_response": {
+        "findings": [
+          {
+            "code": "missing_claim",
+            "metric": "bin",
+            "evidence_ids": [
+              "obs-1991-12"
+            ]
+          }
+        ]
+      },
+      "reviewer_raises": false,
+      "expected_publishable": false
+    },
+    {
+      "case_id": "RC-004",
+      "description": "Wrong reporting month; reviewer misses it.",
+      "evidence": {
+        "request": {
+          "account_id": 1000001,
+          "period": "1991-12-01",
+          "market": 1
+        },
+        "observations": [
+          {
+            "evidence_id": "obs-1991-12",
+            "period": "1991-12-01",
+            "market": 1,
+            "score": 271,
+            "bin": 6
+          }
+        ]
+      },
+      "proposal": {
+        "answer": "Unpublished scripted draft; never use this text as the public answer.",
+        "score_claims": [
+          {
+            "account_id": 1000001,
+            "period": "1991-11-01",
+            "market": 1,
+            "metric": "score",
+            "value": 271
+          },
+          {
+            "account_id": 1000001,
+            "period": "1991-11-01",
+            "market": 1,
+            "metric": "bin",
+            "value": 6
+          }
+        ],
+        "policy_claims": [],
+        "limitations": []
+      },
+      "reviewer_response": {
+        "findings": []
+      },
+      "reviewer_raises": false,
+      "expected_publishable": false
+    },
+    {
+      "case_id": "RC-005",
+      "description": "Wrong market; reviewer misses it.",
+      "evidence": {
+        "request": {
+          "account_id": 1000001,
+          "period": "1991-12-01",
+          "market": 1
+        },
+        "observations": [
+          {
+            "evidence_id": "obs-1991-12",
+            "period": "1991-12-01",
+            "market": 1,
+            "score": 271,
+            "bin": 6
+          }
+        ]
+      },
+      "proposal": {
+        "answer": "Unpublished scripted draft; never use this text as the public answer.",
+        "score_claims": [
+          {
+            "account_id": 1000001,
+            "period": "1991-12-01",
+            "market": 2,
+            "metric": "score",
+            "value": 271
+          },
+          {
+            "account_id": 1000001,
+            "period": "1991-12-01",
+            "market": 2,
+            "metric": "bin",
+            "value": 6
+          }
+        ],
+        "policy_claims": [],
+        "limitations": []
+      },
+      "reviewer_response": {
+        "findings": []
+      },
+      "reviewer_raises": false,
+      "expected_publishable": false
+    },
+    {
+      "case_id": "RC-006",
+      "description": "Duplicate score claim; reviewer flags scope issue.",
+      "evidence": {
+        "request": {
+          "account_id": 1000001,
+          "period": "1991-12-01",
+          "market": 1
+        },
+        "observations": [
+          {
+            "evidence_id": "obs-1991-12",
+            "period": "1991-12-01",
+            "market": 1,
+            "score": 271,
+            "bin": 6
+          }
+        ]
+      },
+      "proposal": {
+        "answer": "Unpublished scripted draft; never use this text as the public answer.",
+        "score_claims": [
+          {
+            "account_id": 1000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "score",
+            "value": 271
+          },
+          {
+            "account_id": 1000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "bin",
+            "value": 6
+          },
+          {
+            "account_id": 1000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "score",
+            "value": 271
+          }
+        ],
+        "policy_claims": [],
+        "limitations": []
+      },
+      "reviewer_response": {
+        "findings": [
+          {
+            "code": "unsupported_claim",
+            "metric": "score",
+            "evidence_ids": [
+              "obs-1991-12"
+            ]
+          }
+        ]
+      },
+      "reviewer_raises": false,
+      "expected_publishable": false
+    },
+    {
+      "case_id": "RC-007",
+      "description": "No observed target score; reviewer flags unavailable evidence.",
+      "evidence": {
+        "request": {
+          "account_id": 1000001,
+          "period": "1991-12-01",
+          "market": 1
+        },
+        "observations": []
+      },
+      "proposal": {
+        "answer": "Unpublished scripted draft; never use this text as the public answer.",
+        "score_claims": [
+          {
+            "account_id": 1000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "score",
+            "value": 271
+          },
+          {
+            "account_id": 1000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "bin",
+            "value": 6
+          }
+        ],
+        "policy_claims": [],
+        "limitations": []
+      },
+      "reviewer_response": {
+        "findings": [
+          {
+            "code": "evidence_gap",
+            "metric": "score",
+            "evidence_ids": []
+          }
+        ]
+      },
+      "reviewer_raises": false,
+      "expected_publishable": false
+    },
+    {
+      "case_id": "RC-008",
+      "description": "Valid package, scripted reviewer false alarm causes unnecessary hold.",
+      "evidence": {
+        "request": {
+          "account_id": 1000001,
+          "period": "1991-12-01",
+          "market": 1
+        },
+        "observations": [
+          {
+            "evidence_id": "obs-1991-12",
+            "period": "1991-12-01",
+            "market": 1,
+            "score": 271,
+            "bin": 6
+          }
+        ]
+      },
+      "proposal": {
+        "answer": "Unpublished scripted draft; never use this text as the public answer.",
+        "score_claims": [
+          {
+            "account_id": 1000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "score",
+            "value": 271
+          },
+          {
+            "account_id": 1000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "bin",
+            "value": 6
+          }
+        ],
+        "policy_claims": [],
+        "limitations": []
+      },
+      "reviewer_response": {
+        "findings": [
+          {
+            "code": "unsupported_claim",
+            "metric": "score",
+            "evidence_ids": [
+              "obs-1991-12"
+            ]
+          }
+        ]
+      },
+      "reviewer_raises": false,
+      "expected_publishable": true
+    },
+    {
+      "case_id": "RC-009",
+      "description": "Valid package, scripted reviewer unavailable.",
+      "evidence": {
+        "request": {
+          "account_id": 1000001,
+          "period": "1991-12-01",
+          "market": 1
+        },
+        "observations": [
+          {
+            "evidence_id": "obs-1991-12",
+            "period": "1991-12-01",
+            "market": 1,
+            "score": 271,
+            "bin": 6
+          }
+        ]
+      },
+      "proposal": {
+        "answer": "Unpublished scripted draft; never use this text as the public answer.",
+        "score_claims": [
+          {
+            "account_id": 1000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "score",
+            "value": 271
+          },
+          {
+            "account_id": 1000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "bin",
+            "value": 6
+          }
+        ],
+        "policy_claims": [],
+        "limitations": []
+      },
+      "reviewer_response": {
+        "findings": []
+      },
+      "reviewer_raises": true,
+      "expected_publishable": true
+    },
+    {
+      "case_id": "RC-010",
+      "description": "Valid package, reviewer attempts unsupported approval/override fields.",
+      "evidence": {
+        "request": {
+          "account_id": 1000001,
+          "period": "1991-12-01",
+          "market": 1
+        },
+        "observations": [
+          {
+            "evidence_id": "obs-1991-12",
+            "period": "1991-12-01",
+            "market": 1,
+            "score": 271,
+            "bin": 6
+          }
+        ]
+      },
+      "proposal": {
+        "answer": "Unpublished scripted draft; never use this text as the public answer.",
+        "score_claims": [
+          {
+            "account_id": 1000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "score",
+            "value": 271
+          },
+          {
+            "account_id": 1000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "bin",
+            "value": 6
+          }
+        ],
+        "policy_claims": [],
+        "limitations": []
+      },
+      "reviewer_response": {
+        "approved": true,
+        "override_verification": true
+      },
+      "reviewer_raises": false,
+      "expected_publishable": true
+    }
+  ]
+}
