@@ -1,0 +1,301 @@
+{
+  "version": "numeric-live-fixtures-v1",
+  "paired": [
+    {
+      "case_id": "LP-A1",
+      "evidence": {
+        "request": {
+          "account_id": 9000001,
+          "period": "1991-12-01",
+          "market": 1
+        },
+        "observations": [
+          {
+            "evidence_id": "obs-1991-12",
+            "period": "1991-12-01",
+            "market": 1,
+            "score": 300,
+            "bin": 7
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "LP-A2",
+      "evidence": {
+        "request": {
+          "account_id": 9000001,
+          "period": "1991-12-01",
+          "market": 1
+        },
+        "observations": [
+          {
+            "evidence_id": "obs-1991-11",
+            "period": "1991-11-01",
+            "market": 1,
+            "score": 299,
+            "bin": 6
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "LP-A3",
+      "evidence": {
+        "request": {
+          "account_id": 9000001,
+          "period": "1991-12-01",
+          "market": 1
+        },
+        "observations": [
+          {
+            "evidence_id": "obs-1991-10",
+            "period": "1991-10-01",
+            "market": 1,
+            "score": 449,
+            "bin": 9
+          },
+          {
+            "evidence_id": "obs-1991-11",
+            "period": "1991-11-01",
+            "market": 1,
+            "score": 0,
+            "bin": 1
+          },
+          {
+            "evidence_id": "obs-1991-12",
+            "period": "1991-12-01",
+            "market": 1,
+            "score": 49,
+            "bin": 1
+          }
+        ]
+      }
+    }
+  ],
+  "challenges": [
+    {
+      "case_id": "LP-B1",
+      "evidence": {
+        "request": {
+          "account_id": 9000001,
+          "period": "1991-12-01",
+          "market": 1
+        },
+        "observations": [
+          {
+            "evidence_id": "obs-1991-12",
+            "period": "1991-12-01",
+            "market": 1,
+            "score": 300,
+            "bin": 7
+          }
+        ]
+      },
+      "proposal": {
+        "answer": "Unpublished diagnostic draft.",
+        "score_claims": [
+          {
+            "account_id": 9000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "score",
+            "value": 300
+          },
+          {
+            "account_id": 9000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "bin",
+            "value": 7
+          }
+        ],
+        "policy_claims": [],
+        "limitations": []
+      },
+      "expected_findings": [],
+      "reference_publishable": true
+    },
+    {
+      "case_id": "LP-B2",
+      "evidence": {
+        "request": {
+          "account_id": 9000001,
+          "period": "1991-12-01",
+          "market": 1
+        },
+        "observations": [
+          {
+            "evidence_id": "obs-1991-12",
+            "period": "1991-12-01",
+            "market": 1,
+            "score": 300,
+            "bin": 7
+          }
+        ]
+      },
+      "proposal": {
+        "answer": "Unpublished diagnostic draft.",
+        "score_claims": [
+          {
+            "account_id": 9000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "score",
+            "value": 301
+          },
+          {
+            "account_id": 9000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "bin",
+            "value": 7
+          }
+        ],
+        "policy_claims": [],
+        "limitations": []
+      },
+      "expected_findings": [
+        [
+          "unsupported_claim",
+          "score"
+        ]
+      ],
+      "reference_publishable": false
+    },
+    {
+      "case_id": "LP-B3",
+      "evidence": {
+        "request": {
+          "account_id": 9000001,
+          "period": "1991-12-01",
+          "market": 1
+        },
+        "observations": [
+          {
+            "evidence_id": "obs-1991-12",
+            "period": "1991-12-01",
+            "market": 1,
+            "score": 300,
+            "bin": 7
+          }
+        ]
+      },
+      "proposal": {
+        "answer": "Unpublished diagnostic draft.",
+        "score_claims": [
+          {
+            "account_id": 9000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "score",
+            "value": 300
+          }
+        ],
+        "policy_claims": [],
+        "limitations": []
+      },
+      "expected_findings": [
+        [
+          "missing_claim",
+          "bin"
+        ]
+      ],
+      "reference_publishable": false
+    },
+    {
+      "case_id": "LP-B4",
+      "evidence": {
+        "request": {
+          "account_id": 9000001,
+          "period": "1991-12-01",
+          "market": 1
+        },
+        "observations": [
+          {
+            "evidence_id": "obs-1991-12",
+            "period": "1991-12-01",
+            "market": 1,
+            "score": 300,
+            "bin": 7
+          }
+        ]
+      },
+      "proposal": {
+        "answer": "Unpublished diagnostic draft.",
+        "score_claims": [
+          {
+            "account_id": 9000001,
+            "period": "1991-11-01",
+            "market": 1,
+            "metric": "score",
+            "value": 300
+          },
+          {
+            "account_id": 9000001,
+            "period": "1991-11-01",
+            "market": 1,
+            "metric": "bin",
+            "value": 7
+          }
+        ],
+        "policy_claims": [],
+        "limitations": []
+      },
+      "expected_findings": [
+        [
+          "context_mismatch",
+          "score"
+        ],
+        [
+          "context_mismatch",
+          "bin"
+        ]
+      ],
+      "reference_publishable": false
+    },
+    {
+      "case_id": "LP-B5",
+      "evidence": {
+        "request": {
+          "account_id": 9000001,
+          "period": "1991-12-01",
+          "market": 1
+        },
+        "observations": []
+      },
+      "proposal": {
+        "answer": "Unpublished diagnostic draft.",
+        "score_claims": [
+          {
+            "account_id": 9000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "score",
+            "value": 300
+          },
+          {
+            "account_id": 9000001,
+            "period": "1991-12-01",
+            "market": 1,
+            "metric": "bin",
+            "value": 7
+          }
+        ],
+        "policy_claims": [],
+        "limitations": []
+      },
+      "expected_findings": [
+        [
+          "evidence_gap",
+          "score"
+        ],
+        [
+          "evidence_gap",
+          "bin"
+        ]
+      ],
+      "reference_publishable": false
+    }
+  ]
+}
