@@ -8,6 +8,14 @@ Customer Score Copilot brings constrained database tools and policy retrieval in
 
 **Note:** This is a portfolio and learning project built entirely on independently generated synthetic data. All accounts, score histories and demonstration scenarios are fictional; no real customer records or proprietary datasets are used. The policy rules are also independently invented for this demonstration. The project illustrates evidence-based review workflows; it is not a production credit-decision system.
 
+## Next: Phase 2 (in progress)
+
+Phase 2 extends the Slack demo with a persistent analyst review workflow. A review can be saved, resumed after a restart, and resolved with a recorded analyst decision. The branch also benchmarks policy retrieval across TF-IDF, MiniLM embeddings, and hybrid rank fusion on a fixed set of held-out questions.
+
+Upcoming work includes testing how retrieved evidence supports verified notes, building a web interface for analyst review, and adding hosting and operational monitoring.
+
+[Follow Phase 2 development](https://github.com/IyadKhuder/customer-score-copilot/tree/phase2/persistent-review-workflow) · [Read the retrieval benchmark](https://github.com/IyadKhuder/customer-score-copilot/blob/6f826c902ccac4606aa8e0ea3ebae13363606828/docs/Phase2_M2_1_Retrieval_Pilot.md)
+
 ## See it in Slack
 
 ### A sharp drop followed by partial recovery
