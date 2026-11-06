@@ -10,11 +10,15 @@ Customer Score Copilot brings constrained database tools and policy retrieval in
 
 ## Next: Phase 2 (in progress)
 
-Phase 2 extends the Slack demo with a persistent analyst review workflow. A review can be saved, resumed after a restart, and resolved with a recorded analyst decision. The branch also benchmarks policy retrieval across TF-IDF, MiniLM embeddings, and hybrid rank fusion on a fixed set of held-out questions.
+**LangGraph** orchestrates the persistent analyst review prototype. It uses **SQLite checkpoints** to save where a case is in the workflow, pause for human review, and resume after a process restart. An analyst decision is recorded against the exact saved review package, so resuming the workflow does not rerun the analysis or apply a decision to a stale package.
 
-Upcoming work includes testing how retrieved evidence supports verified notes, building a web interface for analyst review, and adding hosting and operational monitoring.
+**Retrieval evaluation** compares **TF-IDF**, **MiniLM embeddings**, and **hybrid reciprocal rank fusion** on a fixed, held-out question set. All three retrieved the labeled evidence in the top three on this benchmark. The frozen-note workflow uses TF-IDF and binds retrieved evidence to the same policy snapshot recorded in the note's provenance.
 
-[Follow Phase 2 development](https://github.com/IyadKhuder/customer-score-copilot/tree/phase2/persistent-review-workflow) · [Read the retrieval benchmark](https://github.com/IyadKhuder/customer-score-copilot/blob/6f826c902ccac4606aa8e0ea3ebae13363606828/docs/Phase2_M2_1_Retrieval_Pilot.md)
+**Planned next** are an **HTTP API** for submitting cases, checking status, and recording analyst decisions, plus **Docker** packaging for a reproducible local deployment. Later work includes a web interface for the analyst queue and case review, hosting, and operational monitoring.
+
+- [Follow Phase 2 development](https://github.com/IyadKhuder/customer-score-copilot/tree/phase2/persistent-review-workflow)
+- [Explore the LangGraph workflow](https://github.com/IyadKhuder/customer-score-copilot/blob/phase2/persistent-review-workflow/docs/Phase2_M1_1_LangGraph.md)
+- [Read the retrieval evaluation and selection](https://github.com/IyadKhuder/customer-score-copilot/blob/0831c2f/docs/Phase2_M2_2_Retriever_Selection.md)
 
 ## See it in Slack
 
@@ -199,6 +203,16 @@ Recorded movements and selected demo-policy indications do not explain causes, e
 - [Original migration review](docs/MIGRATION_REVIEW.md)
 
 `EXPORT_MANIFEST.json` records the original migration export at commit `6586c3e`; later changes do not update that historical snapshot or its hashes.
+
+## Technologies and skills
+
+| Status | Technologies and skills |
+| --- | --- |
+| Slack demo | **Python**, **pandas**, **SQLite and SQL**, **Slack Bolt and Socket Mode**, **Matplotlib** |
+| LLM and retrieval | **Gemini and Anthropic adapters**, **tool calling**, **retrieval-augmented generation (RAG)**, **scikit-learn TF-IDF**, **structured outputs**, **deterministic claim verification** |
+| Phase 2 implemented | **LangGraph** with SQLite checkpointing and human-in-the-loop review, **MiniLM with ONNX Runtime** for embedding experiments, **hybrid rank fusion**, **held-out retrieval evaluation** |
+| Testing and delivery | **pytest**, **Git**, **GitHub Actions** with Windows and Linux regression tests |
+| Phase 2 planned | **HTTP API design**, **Docker**, **web UI development**, **deployment and monitoring** |
 
 ## License
 
