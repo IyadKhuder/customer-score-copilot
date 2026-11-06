@@ -66,6 +66,8 @@ class SDK:
                 score_claims=[dict(account_id=account,market=1,period='2025-02-01',metric=k,value=last[k]) for k in ('score','bin')],
                 policy_claims=[dict(base,field='warning_signal_status',value=d['warning_signal_status']),
                     dict(base,field='raw_event_count.consecutive_declines',value=sum(e['criterion']=='consecutive_declines' for e in d['events']))])
+            if self.mode=='unsupported_policy':
+                payload['policy_claims'].append(dict(base, field='appeal_deadline_days', value=30))
             if self.mode=='wrong_score': payload['score_claims'][0]['value']=1
             if self.mode=='limitations': payload['limitations']=['Unsupported extra interpretation']
             message=NS(content='not json' if self.mode=='schema' else json.dumps(payload),tool_calls=[])
@@ -288,3 +290,41 @@ def test_two_notes_do_not_share_account_context(tmp_path):
     assert sdk.calls==b.started==4
     assert 'account 1' in out['results'][0]['narrative']['answer']
     assert 'account 2' in out['results'][1]['narrative']['answer']
+
+
+def test_frozen_policy_bytes_survive_memo_change_during_run(tmp_path, monkeypatch):
+    import hashlib
+    import shutil
+
+    original = report(tmp_path, accounts=(1, 2))
+    shutil.copytree(ROOT / 'policy_memos', tmp_path / 'policy_memos')
+    memo = next((tmp_path / 'policy_memos').glob('POL-002_*.md'))
+    body = memo.read_bytes()
+    sdk = SDK(original)
+    create = sdk.chat.completions.create
+
+    def change_memo_after_request(**kwargs):
+        result = create(**kwargs)
+        memo.write_text('Changed after validation.', encoding='utf-8')
+        return result
+
+    monkeypatch.setattr(sdk.chat.completions, 'create', change_memo_after_request)
+    out = add_verified_notes(original, OpenAICompatibleClient(sdk, 'offline-test'),
+                             budget(), adapter_kind='openai_compatible', source_root=tmp_path)
+    assert out['notes']['retrieval_method'] == 'stemmed_tfidf'
+    assert out['notes']['policy_version'] == 'v1.0'
+    assert out['notes']['policy_sha256'][memo.name] == hashlib.sha256(body).hexdigest()
+    for result in out['results']:
+        note = result['narrative']
+        assert note['status'] == 'published'
+        passage = next(p for p in note['policy_passages'] if p['source'] == memo.name)
+        assert passage['text'] in body.decode('utf-8').replace('\r\n', '\n')
+
+
+def test_related_retrieval_cannot_publish_unsupported_policy_claim(tmp_path):
+    out, _, _ = run(report(tmp_path), mode='unsupported_policy')
+    note = out['results'][0]['narrative']
+    assert note['policy_passages']
+    assert note['status'] == 'blocked'
+    assert note['publishable'] is False
+    assert note['answer'] is None
