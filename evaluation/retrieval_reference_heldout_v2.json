@@ -1,0 +1,142 @@
+[
+  {
+    "id": "Q17",
+    "version": "v1.0",
+    "question": "A customer jumped from Bin 4 to Bin 6 in one period. Does the improvement still need review?",
+    "expected": [
+      "v1.0/POL-001/p001"
+    ],
+    "evidence": "A two-bin move is severe and requires review in either direction."
+  },
+  {
+    "id": "Q18",
+    "version": "v1.0",
+    "question": "Which extreme of the bin scale represents the greatest risk?",
+    "expected": [
+      "v1.0/POL-001/p001"
+    ],
+    "evidence": "Bin 1 is highest risk and Bin 9 is lowest."
+  },
+  {
+    "id": "Q19",
+    "version": "v1.0",
+    "question": "Does a six-period standard deviation of exactly 35 points trigger the volatility criterion?",
+    "expected": [
+      "v1.0/POL-002/p001"
+    ],
+    "evidence": "The standard deviation must exceed 35."
+  },
+  {
+    "id": "Q20",
+    "version": "v1.0",
+    "question": "Can a series of three small consecutive score declines trigger a warning on its own?",
+    "expected": [
+      "v1.0/POL-002/p001"
+    ],
+    "evidence": "Three consecutive declines qualify regardless of magnitude."
+  },
+  {
+    "id": "Q21",
+    "version": "v1.0",
+    "question": "An account entered the Watch band one period ago. What customer-facing action is called for?",
+    "expected": [
+      "v1.0/POL-003/p001"
+    ],
+    "evidence": "Initiate customer contact for entrants within the last two periods."
+  },
+  {
+    "id": "Q22",
+    "version": "v1.0",
+    "question": "What happens to new applications from a Watch-band account?",
+    "expected": [
+      "v1.0/POL-003/p001"
+    ],
+    "evidence": "Flag them for manual underwriting."
+  },
+  {
+    "id": "Q23",
+    "version": "v1.0",
+    "question": "Can the new-market grace period waive standard escalation on a three-bin migration?",
+    "expected": [
+      "v1.0/POL-004/p001"
+    ],
+    "evidence": "The exception excludes migrations of three or more bins."
+  },
+  {
+    "id": "Q24",
+    "version": "v1.0",
+    "question": "A score rose by 151 points in one period. Where should the case go before any risk action?",
+    "expected": [
+      "v1.0/POL-005/p001"
+    ],
+    "evidence": "Route it to data-quality review as a probable error."
+  },
+  {
+    "id": "Q25",
+    "version": "v1.0",
+    "question": "A site’s aggregate downward migration rate is 50 percent above its trailing six-month average. Who reviews the case?",
+    "expected": [
+      "v1.0/POL-007/p001"
+    ],
+    "evidence": "The monthly credit risk committee reviews the site-wide signal."
+  },
+  {
+    "id": "Q26",
+    "version": "v1.1",
+    "question": "Which months fall inside the rolling event look-back for a June report?",
+    "expected": [
+      "v1.1/POL-002/p003"
+    ],
+    "evidence": "April, May, and June."
+  },
+  {
+    "id": "Q27",
+    "version": "v1.1",
+    "question": "How many successive observations establish three consecutive month-over-month decreases?",
+    "expected": [
+      "v1.1/POL-002/p004"
+    ],
+    "evidence": "Four successive observations with calendar continuity."
+  },
+  {
+    "id": "Q28",
+    "version": "v1.1",
+    "question": "Can volatility be treated as below threshold when only five observations exist?",
+    "expected": [
+      "v1.1/POL-002/p005"
+    ],
+    "evidence": "The calculation is undetermined."
+  },
+  {
+    "id": "Q29",
+    "version": "v1.1",
+    "question": "Two distinct warning criteria occurred in different months of the current look-back. Do those two events alone meet the same-period committee criterion, and do they qualify for analyst escalation?",
+    "expected": [
+      "v1.1/POL-002/p010"
+    ],
+    "evidence": "They qualify for analyst escalation but do not meet the committee same-period criterion."
+  },
+  {
+    "id": "Q30",
+    "version": "v1.1",
+    "question": "Is Standard classification alone sufficient to establish eligibility for a credit-limit increase?",
+    "expected": [
+      "v1.1/POL-003/p003"
+    ],
+    "evidence": "Eligibility depends on applicable separate rules and documented restrictions."
+  },
+  {
+    "id": "Q31",
+    "version": "v1.0",
+    "question": "How long must an analyst retain the minutes of a committee meeting?",
+    "expected": [],
+    "evidence": "POL-007 describes committee outputs and gives no retention period."
+  },
+  {
+    "id": "Q32",
+    "version": "v1.1",
+    "question": "What exchange rate should be used when reporting an account's credit limit?",
+    "expected": [],
+    "evidence": "No memo specifies currency conversion."
+  }
+]

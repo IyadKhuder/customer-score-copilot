@@ -1,0 +1,143 @@
+[
+  {
+    "id": "Q01",
+    "version": "v1.0",
+    "question": "What risk band is Bin 6 in, and is a move from Bin 7 to Bin 6 a deterioration?",
+    "expected": [
+      "v1.0/POL-001/p001"
+    ],
+    "evidence": "Bin 6 is Standard. Moving to a lower bin is deterioration."
+  },
+  {
+    "id": "Q02",
+    "version": "v1.0",
+    "question": "Does a drop of exactly 40 points in one period qualify for early-warning review?",
+    "expected": [
+      "v1.0/POL-002/p001"
+    ],
+    "evidence": "40 points is inclusive within the rolling three-month window."
+  },
+  {
+    "id": "Q03",
+    "version": "v1.0",
+    "question": "A site was onboarded six months ago. What single-period score drop triggers an early warning there, and what is the standard threshold?",
+    "expected": [
+      "v1.0/POL-004/p001",
+      "v1.0/POL-002/p001"
+    ],
+    "evidence": "The exception gives 50 points. The standard rule establishes 40 points."
+  },
+  {
+    "id": "Q04",
+    "version": "v1.0",
+    "question": "The score plunged and bounced almost all the way back the next month. Should it go straight to early-warning escalation?",
+    "expected": [
+      "v1.0/POL-005/p001"
+    ],
+    "evidence": "Flag the reversal as a potential artifact and hold escalation pending confirmation."
+  },
+  {
+    "id": "Q05",
+    "version": "v1.0",
+    "question": "A previously flagged account moved into a better bin. How long must it stay there before it can qualify for standard limit review again?",
+    "expected": [
+      "v1.0/POL-006/p001"
+    ],
+    "evidence": "At least three consecutive periods in the improved bin."
+  },
+  {
+    "id": "Q06",
+    "version": "v1.1",
+    "question": "Under v1.1, does score recovery automatically close a logged warning?",
+    "expected": [
+      "v1.1/POL-002/p007"
+    ],
+    "evidence": "The manual-closure paragraph requires documented analyst closure."
+  },
+  {
+    "id": "Q07",
+    "version": "v1.0",
+    "question": "Under v1.0, does score recovery automatically close a logged warning?",
+    "expected": [],
+    "evidence": "Reinstatement eligibility does not establish warning closure."
+  },
+  {
+    "id": "Q08",
+    "version": "v1.0",
+    "question": "How many days does a customer have to appeal a credit-limit freeze?",
+    "expected": [],
+    "evidence": "The corpus gives no appeal deadline."
+  },
+  {
+    "id": "Q09",
+    "version": "v1.0",
+    "question": "Which score bins count as Prime?",
+    "expected": [
+      "v1.0/POL-001/p001"
+    ],
+    "evidence": "Bins 7–9."
+  },
+  {
+    "id": "Q10",
+    "version": "v1.0",
+    "question": "How quickly should a case with two early-warning criteria in the look-back reach an analyst?",
+    "expected": [
+      "v1.0/POL-002/p001"
+    ],
+    "evidence": "Within five business days."
+  },
+  {
+    "id": "Q11",
+    "version": "v1.0",
+    "question": "Is proactive outreach routine for a Standard account with no early-warning trigger?",
+    "expected": [
+      "v1.0/POL-003/p001"
+    ],
+    "evidence": "Normal monitoring applies and proactive outreach is not called for."
+  },
+  {
+    "id": "Q12",
+    "version": "v1.0",
+    "question": "How often must a site-level exception be reviewed?",
+    "expected": [
+      "v1.0/POL-004/p001"
+    ],
+    "evidence": "Quarterly."
+  },
+  {
+    "id": "Q13",
+    "version": "v1.0",
+    "question": "What should the committee output include?",
+    "expected": [
+      "v1.0/POL-007/p001"
+    ],
+    "evidence": "Trend, policy basis for escalation, and a recommended action."
+  },
+  {
+    "id": "Q14",
+    "version": "v1.1",
+    "question": "What must the analyst document when closing a warning?",
+    "expected": [
+      "v1.1/POL-002/p007"
+    ],
+    "evidence": "The closure decision and its date."
+  },
+  {
+    "id": "Q15",
+    "version": "v1.1",
+    "question": "Can score history alone establish whether a historical warning is still open?",
+    "expected": [
+      "v1.1/POL-002/p008"
+    ],
+    "evidence": "Status is unknown without warning-register and closure evidence."
+  },
+  {
+    "id": "Q16",
+    "version": "v1.1",
+    "question": "Does standard limit-review eligibility automatically approve a limit increase?",
+    "expected": [
+      "v1.1/POL-006/p003"
+    ],
+    "evidence": "Eligibility for review does not establish approval."
+  }
+]

@@ -1,0 +1,470 @@
+{
+  "method": "dense_cosine",
+  "split": "heldout",
+  "fixture_sha256": "9ecce4adda21dd28c28d4119c2e4e0a62b89b56306a953142f613dec6fa32fd7",
+  "median_query_ms": 9.069452499943509,
+  "k": 3,
+  "recall_at_k": 1.0,
+  "mrr_at_k": 0.8452380952380952,
+  "versions": {
+    "v1.0": {
+      "index_build_ms": 558.7370600001123,
+      "manifest": {
+        "v1.0/POL-001/p001": {
+          "source": "POL-001_score_bin_definitions.md",
+          "heading": "POL-001 \u2014 Score Bin Definitions",
+          "sha256": "cd7b80a2a5ab57b40623da5f42a3007972c6e0453065f3a82a9335a4896512bd"
+        },
+        "v1.0/POL-002/p001": {
+          "source": "POL-002_early_warning_thresholds.md",
+          "heading": "POL-002 \u2014 Early-Warning Thresholds",
+          "sha256": "305be62f4ba6a8c61db6bfd19fdc10da698878d5dc224ca88963a30f9b2ab868"
+        },
+        "v1.0/POL-003/p001": {
+          "source": "POL-003_recommended_actions_by_risk_band.md",
+          "heading": "POL-003 \u2014 Recommended Actions by Risk Band",
+          "sha256": "a38e95231892bf823709e2ecc24f6f2f0cfc25b5a66cfb6b10bf2947c7a6212c"
+        },
+        "v1.0/POL-004/p001": {
+          "source": "POL-004_site_market_exception_rules.md",
+          "heading": "POL-004 \u2014 Site/Market-Level Exception Rules",
+          "sha256": "84a3d959e2bfe2600a554bfc2089f44309b868234998069d150427f094509a48"
+        },
+        "v1.0/POL-005/p001": {
+          "source": "POL-005_data_quality_and_volatility_flags.md",
+          "heading": "POL-005 \u2014 Data Quality and Volatility Flags",
+          "sha256": "dd41bfd4f7bded9c6638ae33a9d690d08a9c8e0330b4cd8b26e62423f3fd06aa"
+        },
+        "v1.0/POL-006/p001": {
+          "source": "POL-006_score_recovery_and_reinstatement.md",
+          "heading": "POL-006 \u2014 Score Recovery and Reinstatement",
+          "sha256": "34c1398c02f79a7feab0c4edd1826ac980f4c24a7892bba75a0d0962b9c45039"
+        },
+        "v1.0/POL-007/p001": {
+          "source": "POL-007_escalation_and_committee_review_triggers.md",
+          "heading": "POL-007 \u2014 Escalation and Committee Review Triggers",
+          "sha256": "aec378d31925fc45bf014ccbfd4fd27cdc5a0672e53b463ed2a9f1298b1f3bf7"
+        }
+      },
+      "rows": [
+        {
+          "id": "Q17",
+          "expected": [
+            "v1.0/POL-001/p001"
+          ],
+          "ranked": [
+            "v1.0/POL-001/p001",
+            "v1.0/POL-003/p001",
+            "v1.0/POL-006/p001"
+          ],
+          "scores": [
+            0.4442775568150465,
+            0.42770282075654453,
+            0.4276684421343924
+          ],
+          "recall": 1.0,
+          "reciprocal_rank": 1.0,
+          "query_ms": 12.066403000062564
+        },
+        {
+          "id": "Q18",
+          "expected": [
+            "v1.0/POL-001/p001"
+          ],
+          "ranked": [
+            "v1.0/POL-001/p001",
+            "v1.0/POL-003/p001",
+            "v1.0/POL-002/p001"
+          ],
+          "scores": [
+            0.6290182333505567,
+            0.5336560198903164,
+            0.44901536205212256
+          ],
+          "recall": 1.0,
+          "reciprocal_rank": 1.0,
+          "query_ms": 8.18962899984399
+        },
+        {
+          "id": "Q19",
+          "expected": [
+            "v1.0/POL-002/p001"
+          ],
+          "ranked": [
+            "v1.0/POL-005/p001",
+            "v1.0/POL-002/p001",
+            "v1.0/POL-004/p001"
+          ],
+          "scores": [
+            0.2942126668355794,
+            0.26888537999627693,
+            0.23919590554094203
+          ],
+          "recall": 1.0,
+          "reciprocal_rank": 0.5,
+          "query_ms": 9.578415999840217
+        },
+        {
+          "id": "Q20",
+          "expected": [
+            "v1.0/POL-002/p001"
+          ],
+          "ranked": [
+            "v1.0/POL-002/p001",
+            "v1.0/POL-005/p001",
+            "v1.0/POL-007/p001"
+          ],
+          "scores": [
+            0.5659626565793203,
+            0.43511017022258414,
+            0.4054875479397143
+          ],
+          "recall": 1.0,
+          "reciprocal_rank": 1.0,
+          "query_ms": 9.314379999977973
+        },
+        {
+          "id": "Q21",
+          "expected": [
+            "v1.0/POL-003/p001"
+          ],
+          "ranked": [
+            "v1.0/POL-003/p001",
+            "v1.0/POL-007/p001",
+            "v1.0/POL-002/p001"
+          ],
+          "scores": [
+            0.40306995489513026,
+            0.30241378562273147,
+            0.28570792561152036
+          ],
+          "recall": 1.0,
+          "reciprocal_rank": 1.0,
+          "query_ms": 8.25686999996833
+        },
+        {
+          "id": "Q22",
+          "expected": [
+            "v1.0/POL-003/p001"
+          ],
+          "ranked": [
+            "v1.0/POL-003/p001",
+            "v1.0/POL-006/p001",
+            "v1.0/POL-002/p001"
+          ],
+          "scores": [
+            0.3216684614109149,
+            0.24027310337489044,
+            0.19009894785588868
+          ],
+          "recall": 1.0,
+          "reciprocal_rank": 1.0,
+          "query_ms": 7.383346999631613
+        },
+        {
+          "id": "Q23",
+          "expected": [
+            "v1.0/POL-004/p001"
+          ],
+          "ranked": [
+            "v1.0/POL-007/p001",
+            "v1.0/POL-004/p001",
+            "v1.0/POL-002/p001"
+          ],
+          "scores": [
+            0.5088840048814725,
+            0.4265268636204059,
+            0.3451584178826759
+          ],
+          "recall": 1.0,
+          "reciprocal_rank": 0.5,
+          "query_ms": 9.513823999895976
+        },
+        {
+          "id": "Q24",
+          "expected": [
+            "v1.0/POL-005/p001"
+          ],
+          "ranked": [
+            "v1.0/POL-002/p001",
+            "v1.0/POL-005/p001",
+            "v1.0/POL-007/p001"
+          ],
+          "scores": [
+            0.38571627841131784,
+            0.38406187299619354,
+            0.34954804820101815
+          ],
+          "recall": 1.0,
+          "reciprocal_rank": 0.5,
+          "query_ms": 8.496870000271883
+        },
+        {
+          "id": "Q25",
+          "expected": [
+            "v1.0/POL-007/p001"
+          ],
+          "ranked": [
+            "v1.0/POL-007/p001",
+            "v1.0/POL-004/p001",
+            "v1.0/POL-002/p001"
+          ],
+          "scores": [
+            0.45986167741018547,
+            0.3655642146393202,
+            0.34191104627157526
+          ],
+          "recall": 1.0,
+          "reciprocal_rank": 1.0,
+          "query_ms": 8.745020999867847
+        },
+        {
+          "id": "Q31",
+          "expected": [],
+          "ranked": [
+            "v1.0/POL-007/p001",
+            "v1.0/POL-006/p001",
+            "v1.0/POL-002/p001"
+          ],
+          "scores": [
+            0.25354858440192385,
+            0.21356208221321168,
+            0.1896009754321918
+          ],
+          "recall": null,
+          "reciprocal_rank": null,
+          "query_ms": 5.8805560001928825
+        }
+      ]
+    },
+    "v1.1": {
+      "index_build_ms": 1823.5747800003992,
+      "manifest": {
+        "v1.1/POL-001/p001": {
+          "source": "POL-001_score_bin_definitions.md",
+          "heading": "POL-001 \u2014 Score Bin Definitions",
+          "sha256": "cd7b80a2a5ab57b40623da5f42a3007972c6e0453065f3a82a9335a4896512bd"
+        },
+        "v1.1/POL-002/p001": {
+          "source": "POL-002_early_warning_thresholds.md",
+          "heading": "POL-002 \u2014 Early-Warning Thresholds",
+          "sha256": "2452d6c5e8bea9545b6b1c8874abf0fc0ae21f2b87d996f65a1982c12606cc41"
+        },
+        "v1.1/POL-002/p002": {
+          "source": "POL-002_early_warning_thresholds.md",
+          "heading": "Early-warning criteria (unchanged)",
+          "sha256": "305be62f4ba6a8c61db6bfd19fdc10da698878d5dc224ca88963a30f9b2ab868"
+        },
+        "v1.1/POL-002/p003": {
+          "source": "POL-002_early_warning_thresholds.md",
+          "heading": "Rolling-window evaluation (working interpretation for the experiment)",
+          "sha256": "d05a18389e9e377a3adabf7a2c3d4c67657680340037f755297c622053fc0ea9"
+        },
+        "v1.1/POL-002/p004": {
+          "source": "POL-002_early_warning_thresholds.md",
+          "heading": "Rolling-window evaluation (working interpretation for the experiment)",
+          "sha256": "bcf92f83230c39e37559c4c461186e2a396f69207bb042654925ae074a54dc04"
+        },
+        "v1.1/POL-002/p005": {
+          "source": "POL-002_early_warning_thresholds.md",
+          "heading": "Rolling-window evaluation (working interpretation for the experiment)",
+          "sha256": "081bc15b38646a0f960ca82867b785d4c1311ce57fdf1b1a21869383fd153095"
+        },
+        "v1.1/POL-002/p006": {
+          "source": "POL-002_early_warning_thresholds.md",
+          "heading": "Logged-warning status and closure (NEW GOVERNANCE RULE \u2014 approved for this synthetic project)",
+          "sha256": "b3c930ebfe65f96f2f863a0421b9a526d43db41a8497b1830a3ec530c8ca3058"
+        },
+        "v1.1/POL-002/p007": {
+          "source": "POL-002_early_warning_thresholds.md",
+          "heading": "Logged-warning status and closure (NEW GOVERNANCE RULE \u2014 approved for this synthetic project)",
+          "sha256": "4584486bbbd93749ef1a56909377cca47802aedf14a6b9014311f2702ff80795"
+        },
+        "v1.1/POL-002/p008": {
+          "source": "POL-002_early_warning_thresholds.md",
+          "heading": "Logged-warning status and closure (NEW GOVERNANCE RULE \u2014 approved for this synthetic project)",
+          "sha256": "fcd5882e2b1ef4daf571313be2944d6c196a4d7b2ed5217ce9746bbd02cd60b6"
+        },
+        "v1.1/POL-002/p009": {
+          "source": "POL-002_early_warning_thresholds.md",
+          "heading": "Logged-warning status and closure (NEW GOVERNANCE RULE \u2014 approved for this synthetic project)",
+          "sha256": "6ed7bb83665a7b54e2413924002ee12088a9ebe392b22e88656ddd71794a94fa"
+        },
+        "v1.1/POL-002/p010": {
+          "source": "POL-002_early_warning_thresholds.md",
+          "heading": "Escalation and related policy (working interpretation for the experiment)",
+          "sha256": "3474376021b44a98717f41051c442ebd6bdfa205632b48b227d52e87f4eaaa43"
+        },
+        "v1.1/POL-003/p001": {
+          "source": "POL-003_recommended_actions_by_risk_band.md",
+          "heading": "POL-003 \u2014 Recommended Actions by Risk Band",
+          "sha256": "b7fd4a55932ca6a3a7487a8668900238e5405761ed62a0f3aa46f3f7f5c2765f"
+        },
+        "v1.1/POL-003/p002": {
+          "source": "POL-003_recommended_actions_by_risk_band.md",
+          "heading": "Risk-band actions (unchanged)",
+          "sha256": "a38e95231892bf823709e2ecc24f6f2f0cfc25b5a66cfb6b10bf2947c7a6212c"
+        },
+        "v1.1/POL-003/p003": {
+          "source": "POL-003_recommended_actions_by_risk_band.md",
+          "heading": "Standard band versus limit restrictions (proposed clarification)",
+          "sha256": "38fcf3b56621bd1f0074dc5e3297762540054d5361fb8ac63cbb513f6a553c79"
+        },
+        "v1.1/POL-003/p004": {
+          "source": "POL-003_recommended_actions_by_risk_band.md",
+          "heading": "Interaction with warnings (proposed clarification)",
+          "sha256": "4dcb7414c141c2fcaa951e109fdfe5169ab776eea56d34bcceae26073f46344c"
+        },
+        "v1.1/POL-004/p001": {
+          "source": "POL-004_site_market_exception_rules.md",
+          "heading": "POL-004 \u2014 Site/Market-Level Exception Rules",
+          "sha256": "84a3d959e2bfe2600a554bfc2089f44309b868234998069d150427f094509a48"
+        },
+        "v1.1/POL-005/p001": {
+          "source": "POL-005_data_quality_and_volatility_flags.md",
+          "heading": "POL-005 \u2014 Data Quality and Volatility Flags",
+          "sha256": "dd41bfd4f7bded9c6638ae33a9d690d08a9c8e0330b4cd8b26e62423f3fd06aa"
+        },
+        "v1.1/POL-006/p001": {
+          "source": "POL-006_score_recovery_and_reinstatement.md",
+          "heading": "POL-006 \u2014 Score Recovery and Reinstatement",
+          "sha256": "4f3fb0094c30d255e983828cbf664be009d9fc6dd8e0023725b6fac31caf318e"
+        },
+        "v1.1/POL-006/p002": {
+          "source": "POL-006_score_recovery_and_reinstatement.md",
+          "heading": "Recovery and reinstatement rule (unchanged)",
+          "sha256": "34c1398c02f79a7feab0c4edd1826ac980f4c24a7892bba75a0d0962b9c45039"
+        },
+        "v1.1/POL-006/p003": {
+          "source": "POL-006_score_recovery_and_reinstatement.md",
+          "heading": "Scope of reinstatement (proposed clarification)",
+          "sha256": "fb4054a9ee632bcb0fc4ea8340762c3926119b067671f9d585a3e49b5b1ba920"
+        },
+        "v1.1/POL-006/p004": {
+          "source": "POL-006_score_recovery_and_reinstatement.md",
+          "heading": "Relationship to warning records (proposed clarification)",
+          "sha256": "568307e2c5a995b441517ef3ecff4fef155d09632d8f6aa06aaa04971b62c66b"
+        },
+        "v1.1/POL-007/p001": {
+          "source": "POL-007_escalation_and_committee_review_triggers.md",
+          "heading": "POL-007 \u2014 Escalation and Committee Review Triggers",
+          "sha256": "aec378d31925fc45bf014ccbfd4fd27cdc5a0672e53b463ed2a9f1298b1f3bf7"
+        }
+      },
+      "rows": [
+        {
+          "id": "Q26",
+          "expected": [
+            "v1.1/POL-002/p003"
+          ],
+          "ranked": [
+            "v1.1/POL-002/p003",
+            "v1.1/POL-002/p004",
+            "v1.1/POL-002/p005"
+          ],
+          "scores": [
+            0.7201601247414224,
+            0.6091346310671688,
+            0.5716019197279956
+          ],
+          "recall": 1.0,
+          "reciprocal_rank": 1.0,
+          "query_ms": 13.786436999907892
+        },
+        {
+          "id": "Q27",
+          "expected": [
+            "v1.1/POL-002/p004"
+          ],
+          "ranked": [
+            "v1.1/POL-002/p004",
+            "v1.1/POL-002/p005",
+            "v1.1/POL-002/p003"
+          ],
+          "scores": [
+            0.5729124065657188,
+            0.4266588112887399,
+            0.40355144622073275
+          ],
+          "recall": 1.0,
+          "reciprocal_rank": 1.0,
+          "query_ms": 11.909724000361166
+        },
+        {
+          "id": "Q28",
+          "expected": [
+            "v1.1/POL-002/p005"
+          ],
+          "ranked": [
+            "v1.1/POL-005/p001",
+            "v1.1/POL-002/p002",
+            "v1.1/POL-002/p005"
+          ],
+          "scores": [
+            0.3635984430083493,
+            0.3290719793371445,
+            0.32601485509820544
+          ],
+          "recall": 1.0,
+          "reciprocal_rank": 0.3333333333333333,
+          "query_ms": 9.722727000280429
+        },
+        {
+          "id": "Q29",
+          "expected": [
+            "v1.1/POL-002/p010"
+          ],
+          "ranked": [
+            "v1.1/POL-002/p010",
+            "v1.1/POL-007/p001",
+            "v1.1/POL-003/p004"
+          ],
+          "scores": [
+            0.74973420551996,
+            0.6338975118491555,
+            0.5438525374492689
+          ],
+          "recall": 1.0,
+          "reciprocal_rank": 1.0,
+          "query_ms": 23.60977600028491
+        },
+        {
+          "id": "Q30",
+          "expected": [
+            "v1.1/POL-003/p003"
+          ],
+          "ranked": [
+            "v1.1/POL-003/p003",
+            "v1.1/POL-006/p003",
+            "v1.1/POL-002/p001"
+          ],
+          "scores": [
+            0.6051730425814756,
+            0.4858100746263846,
+            0.4097731998911131
+          ],
+          "recall": 1.0,
+          "reciprocal_rank": 1.0,
+          "query_ms": 8.824524999909045
+        },
+        {
+          "id": "Q32",
+          "expected": [],
+          "ranked": [
+            "v1.1/POL-003/p003",
+            "v1.1/POL-006/p003",
+            "v1.1/POL-007/p001"
+          ],
+          "scores": [
+            0.432671101351352,
+            0.3614270847226063,
+            0.3388030717281361
+          ],
+          "recall": null,
+          "reciprocal_rank": null,
+          "query_ms": 8.588099999997212
+        }
+      ]
+    }
+  }
+}
