@@ -1,0 +1,4 @@
+# Local authenticated API; live provider calls remain disabled.
+-r requirements-workflow.txt
+fastapi==0.162.1
+uvicorn==0.54.0

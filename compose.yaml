@@ -1,0 +1,14 @@
+services:
+  api:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      COPILOT_API_TOKEN: ${COPILOT_API_TOKEN:?Set a random token of at least 32 characters}
+    volumes:
+      - case-state:/app/var/api
+    restart: "no"
+    init: true
+    stop_grace_period: 30s
+volumes:
+  case-state:

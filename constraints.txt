@@ -83,3 +83,10 @@ uuid_utils==0.19.0
 websockets==17.4
 xxhash==4.0.2
 zstandard==0.25.0
+
+# M3.1 local API, resolved 7 November 2026.
+fastapi==0.162.1
+uvicorn==0.54.0
+starlette==1.6.0
+annotated-doc==0.0.5
+opentelemetry-api==1.45.2

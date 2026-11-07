@@ -52,3 +52,30 @@ jobs:
         env:
           POLICY_VERSION: v1.1
         run: python -c "from src.retriever import POLICY_DIR, load_all_chunks; assert POLICY_DIR.name == 'v1_1'; assert load_all_chunks()"
+
+  container:
+    name: Local API container and durable restart
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # Disposable CI-only token; no provider credentials or paid calls.
+      COPILOT_API_TOKEN: ci-disposable-offline-token-for-m31-only
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Build and start container
+        run: docker compose up --build --detach --wait --wait-timeout 180
+      - name: Submit and pause for review over HTTP
+        run: python -m scripts.smoke_api_phase2 prepare
+      - name: Replace container while preserving named volume
+        run: docker compose up --detach --force-recreate --wait --wait-timeout 180
+      - name: Verify restart, idempotency and analyst decision
+        run: python -m scripts.smoke_api_phase2 resume
+      - name: Container diagnostics
+        if: failure()
+        run: docker compose logs --no-color
+      - name: Stop container
+        if: always()
+        run: docker compose down

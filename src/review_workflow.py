@@ -58,6 +58,17 @@ class TransitionError(ValueError):
     """The requested operation conflicts with the saved case state."""
 
 
+def new_case(evidence, provenance):
+    """Construct one immutable-input case; callers persist it atomically."""
+    case = dict(schema_version=1, case_id=str(uuid4()), revision=0,
+                workflow_status='queued', verification_status='not_requested',
+                analyst_decision='pending', evidence=evidence, provenance=provenance,
+                snapshot_hash=digest([evidence, provenance]), analysis=None,
+                package_hash=None, decision=None, decision_hash=None,
+                created_at=now(), updated_at=now(), events=[])
+    return case
+
+
 class CaseStore:
     """Single-worker local demo. Each state update uses a revision comparison."""
     def __init__(self, path):
@@ -76,12 +87,7 @@ class CaseStore:
         provenance = {'policy': 'workflow-demo-only-v1',
                       'config': 'deterministic-endpoint-difference-v1',
                       'code_contract': 'workflow-skeleton-v1'}
-        case = dict(schema_version=1, case_id=str(uuid4()), revision=0,
-                    workflow_status='queued', verification_status='not_requested',
-                    analyst_decision='pending', evidence=evidence, provenance=provenance,
-                    snapshot_hash=digest([evidence, provenance]), analysis=None,
-                    package_hash=None, decision=None, decision_hash=None,
-                    created_at=now(), updated_at=now(), events=[])
+        case = new_case(evidence, provenance)
         with closing(self.connect()) as db, db:
             db.execute('INSERT INTO review_cases VALUES (?, ?, ?)',
                        (case['case_id'], 0, json.dumps(case)))
@@ -189,7 +195,7 @@ def analyze_demo(evidence):
         'passed' if verified else 'blocked')
 
 
-def resume(store, case_id, analyzer=analyze_demo):
+def resume(store, case_id, analyzer=analyze_demo, *, held_projection=None):
     case = store.read(case_id)
     if case['workflow_status'] == 'running':
         # An interrupted attempt has no recorded output: never silently replay it.
@@ -208,8 +214,9 @@ def resume(store, case_id, analyzer=analyze_demo):
                                 reason_code='INVALID_VERIFICATION_RESULT')
     if verification != 'passed':
         # Keep frozen evidence and a safe diagnostic, not unverified draft text.
-        analysis = {'claims': [], 'answer': None,
-                    'reason_codes': ['VERIFICATION_' + verification.upper()]}
+        analysis = (held_projection(analysis, verification) if held_projection else
+                    {'claims': [], 'answer': None,
+                     'reason_codes': ['VERIFICATION_' + verification.upper()]})
     return store.transition(case_id, case['revision'],
                             'awaiting_review' if verification == 'passed' else 'held',
                             analysis=analysis, verification=verification,

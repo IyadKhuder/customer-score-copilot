@@ -5,3 +5,6 @@ pytest-subtests==0.14.2
 
 # Exercise optional workflow in the existing OS/Python CI matrix.
 -r requirements-workflow.txt
+
+# API contract and restart regression tests.
+-r requirements-api.txt

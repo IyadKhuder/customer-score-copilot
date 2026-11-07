@@ -34,13 +34,14 @@ def checked_case(store, state):
     return case
 
 
-def build_graph(store, saver, analyzer=None, allowed_reviewers=DEMO_REVIEWERS):
+def build_graph(store, saver, analyzer=None, allowed_reviewers=DEMO_REVIEWERS,
+                held_projection=None):
     def analyze(state):
         checked_case(store, state)
         if analyzer is None:
             resume(store, state['case_id'])
         else:
-            resume(store, state['case_id'], analyzer)
+            resume(store, state['case_id'], analyzer, held_projection=held_projection)
         # The case is the authority. Replaying this node reads saved output.
         return {}
 
@@ -73,12 +74,12 @@ def build_graph(store, saver, analyzer=None, allowed_reviewers=DEMO_REVIEWERS):
 
 
 @contextmanager
-def open_graph(path, analyzer=None, allowed_reviewers=DEMO_REVIEWERS):
+def open_graph(path, analyzer=None, allowed_reviewers=DEMO_REVIEWERS, held_projection=None):
     store = CaseStore(path)
     with SqliteSaver.from_conn_string(str(Path(path).resolve())) as saver:
         # Only plain serializable graph fields; never enable pickle fallback.
         saver.serde = JsonPlusSerializer(allowed_msgpack_modules=[])
-        yield store, build_graph(store, saver, analyzer, frozenset(allowed_reviewers))
+        yield store, build_graph(store, saver, analyzer, frozenset(allowed_reviewers), held_projection)
 
 
 def config(case_id):
