@@ -15,3 +15,13 @@ src/**/*.pyc
 !data/manifest.json
 !data/scenarios.json
 !data/scores_extended.csv
+
+!frontend/
+!frontend/package.json
+!frontend/package-lock.json
+!frontend/tsconfig.json
+!frontend/build.mjs
+!frontend/index.html
+!frontend/style.css
+!frontend/src/
+!frontend/src/**

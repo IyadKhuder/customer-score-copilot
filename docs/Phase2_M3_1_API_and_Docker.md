@@ -2,7 +2,7 @@
 
 Date: 7 November 2026. Base: `0831c2f`, branch `phase2/persistent-review-workflow`.
 
-Status: implementation and HTTP verification prepared; Docker execution and owner-side verification pending. Do not mark M3.1 Done until the container operates locally. No live provider calls or actual hours are implied.
+Status: completed at `e27561f`, based on owner-confirmed local Docker persistence/decision checks and all five GitHub Actions jobs passing on 7 November 2026. The preparation-stage verification notes below retain their original context.
 
 ## What this checkpoint teaches
 

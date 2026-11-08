@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Copilot · Case evidence</title>
+    <link rel="stylesheet" href="/ui/style.css" />
+    <script type="module" src="/ui/app.js"></script>
+  </head>
+  <body>
+    <header>
+      <div class="eyebrow">BEHAVIORAL SCORE TRAJECTORY COPILOT</div>
+      <h1>Case evidence</h1>
+      <p>Frozen synthetic histories · Offline analysis · Analyst workspace</p>
+    </header>
+    <main>
+      <section class="connection">
+        <form id="connect">
+          <label for="token">Local API token</label
+          ><input
+            id="token"
+            type="password"
+            autocomplete="off"
+            required
+            minlength="32"
+          /><button>Connect</button>
+        </form>
+        <button id="disconnect" hidden>Disconnect</button>
+        <p id="connection-status" role="status">
+          Enter the token configured for your local API. It stays in memory
+          until disconnect or reload.
+        </p>
+      </section>
+      <div id="workspace" hidden>
+        <section>
+          <div class="toolbar">
+            <h2>Case queue</h2>
+            <label
+              >Workflow
+              <select id="workflow">
+                <option value="">All statuses</option>
+                <option>queued</option>
+                <option>running</option>
+                <option>awaiting_review</option>
+                <option>held</option>
+                <option>failed</option>
+                <option>completed</option>
+              </select></label
+            ><button id="refresh">Refresh queue</button>
+          </div>
+          <p id="queue-status" role="status"></p>
+          <div id="queue" class="table-wrap"></div>
+          <nav aria-label="Queue pages">
+            <button id="previous">Previous</button><span id="page"></span
+            ><button id="next">Next</button>
+          </nav>
+        </section>
+        <section id="detail" aria-label="Case detail" tabindex="-1">
+          <h2>Evidence view</h2>
+          <p>Select a case to inspect its saved package.</p>
+        </section>
+      </div>
+      <footer>
+        Portfolio demonstration using synthetic data. Acceptance of a review
+        package authorizes no credit action. Decision controls arrive in M3.3.
+      </footer>
+    </main>
+  </body>
+</html>

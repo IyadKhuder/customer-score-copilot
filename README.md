@@ -195,3 +195,7 @@ Recorded movements and selected demo-policy indications do not explain causes, e
 ## License
 
 Software and associated documentation are provided under the [MIT License](LICENSE). Third-party dependencies retain their own licenses.
+
+### Phase 2 case queue and evidence view
+
+M3.2 adds a read-only TypeScript interface at `http://127.0.0.1:8000/` when the frontend has been built (automatically in Docker). It shows server-filtered cases, separate workflow/verification/decision statuses, frozen score trajectories, coverage gaps, captured policies and package limitations. Enter the local API bearer token at runtime; it is kept only in page memory. See [the M3.2 guide](docs/Phase2_M3_2_Case_Queue_and_Evidence.md) for architecture, build commands and verification gates. Analyst decision controls remain M3.3.

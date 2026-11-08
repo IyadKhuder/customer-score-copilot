@@ -73,9 +73,26 @@ jobs:
         run: docker compose up --detach --force-recreate --wait --wait-timeout 180
       - name: Verify restart, idempotency and analyst decision
         run: python -m scripts.smoke_api_phase2 resume
+      - name: Verify UI shell, assets and read-only evidence
+        run: python -m scripts.smoke_ui_phase2
       - name: Container diagnostics
         if: failure()
         run: docker compose logs --no-color
       - name: Stop container
         if: always()
         run: docker compose down
+
+  frontend:
+    name: TypeScript evidence view
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --ignore-scripts
+        working-directory: frontend
+      - run: npm test
+        working-directory: frontend

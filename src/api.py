@@ -12,7 +12,10 @@ from uuid import UUID
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, Response
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
+
+from src.case_queue import queue_ids
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -116,7 +119,7 @@ def create_app(*, store_path=None, scores_path=None, source_root=ROOT, token=Non
             raise HTTPException(401, 'Authentication required', headers={'WWW-Authenticate': 'Bearer'})
         return 'demo-analyst'  # Local single-analyst token; never take identity from JSON.
 
-    app = FastAPI(title='Behavioral Score Trajectory Copilot', version='m3.1',
+    app = FastAPI(title='Behavioral Score Trajectory Copilot', version='m3.2',
                   lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
 
     @app.middleware('http')
@@ -131,6 +134,11 @@ def create_app(*, store_path=None, scores_path=None, source_root=ROOT, token=Non
             request._body = bytes(body)
         response = await call_next(request)
         response.headers['Cache-Control'] = 'no-store'
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['Referrer-Policy'] = 'no-referrer'
+        response.headers['Content-Security-Policy'] = (
+            "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; "
+            "img-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'")
         return response
 
     @app.exception_handler(RequestValidationError)
@@ -200,9 +208,12 @@ def create_app(*, store_path=None, scores_path=None, source_root=ROOT, token=Non
 
     @app.get('/cases', dependencies=[Depends(analyst)])
     def cases(limit: int = Query(50, ge=1, le=100), offset: int = Query(0, ge=0, le=100000),
-              service=Depends(application)):
-        return {'items': [projection(service.store.read_owned(i), detail=False)
-                          for i in service.store.ids(limit, offset)], 'limit': limit, 'offset': offset}
+              service=Depends(application),
+              workflow_status: Literal['queued', 'running', 'awaiting_review', 'held',
+                                       'failed', 'completed'] | None = Query(None)):
+        ids, has_more = queue_ids(service.store, limit, offset, workflow_status)
+        return {'items': [projection(service.store.read_owned(i), detail=False) for i in ids],
+                'limit': limit, 'offset': offset, 'has_more': has_more}
 
     @app.get('/cases/{identifier}', dependencies=[Depends(analyst)])
     def read(identifier: str, service=Depends(application)):
@@ -221,4 +232,14 @@ def create_app(*, store_path=None, scores_path=None, source_root=ROOT, token=Non
         payload = dict(body.model_dump(), case_id=identifier, reviewer=actor)
         return projection(service.decide(identifier, payload))
 
+    # The shell contains no private data. Case reads remain bearer-authenticated.
+    ui = Path(__file__).resolve().parents[1] / 'frontend' / 'dist'
+
+    @app.get('/', include_in_schema=False)
+    def frontend():
+        if not (ui / 'index.html').is_file():
+            raise HTTPException(503, 'Build frontend with npm ci and npm run build in frontend')
+        return FileResponse(ui / 'index.html')
+
+    app.mount('/ui', StaticFiles(directory=ui, check_dir=False), name='ui')
     return app

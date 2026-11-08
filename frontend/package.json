@@ -1,0 +1,19 @@
+{
+  "name": "copilot-evidence-view",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=18.16"
+  },
+  "scripts": {
+    "build": "tsc && node build.mjs",
+    "check": "tsc --noEmit",
+    "test": "npm run build && node --test test/controller.test.mjs test/view.test.mjs"
+  },
+  "devDependencies": {
+    "linkedom": "0.18.12",
+    "prettier": "3.6.2",
+    "typescript": "5.9.3"
+  }
+}
