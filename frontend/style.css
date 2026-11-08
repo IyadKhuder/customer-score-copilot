@@ -202,3 +202,20 @@ summary:focus-visible {
     padding: 8px;
   }
 }
+textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  margin: 8px 0 16px;
+}
+textarea:focus-visible {
+  outline: 3px solid #e7ac32;
+}
+section[aria-label="Analyst review"] {
+  overflow-wrap: anywhere;
+}
+.success {
+  color: #14665f;
+  font-weight: bold;
+}

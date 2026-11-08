@@ -66,15 +66,17 @@ jobs:
         with:
           python-version: '3.11'
       - name: Build and start container
-        run: docker compose up --build --detach --wait --wait-timeout 180
+        run: docker compose up --build --detach --wait
       - name: Submit and pause for review over HTTP
         run: python -m scripts.smoke_api_phase2 prepare
       - name: Replace container while preserving named volume
-        run: docker compose up --detach --force-recreate --wait --wait-timeout 180
+        run: docker compose up --detach --force-recreate --wait
       - name: Verify restart, idempotency and analyst decision
         run: python -m scripts.smoke_api_phase2 resume
       - name: Verify UI shell, assets and read-only evidence
         run: python -m scripts.smoke_ui_phase2
+      - name: Verify browser review API contract
+        run: python -m scripts.smoke_review_phase2
       - name: Container diagnostics
         if: failure()
         run: docker compose logs --no-color

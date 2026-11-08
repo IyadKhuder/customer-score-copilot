@@ -1,4 +1,5 @@
 import { Case, text } from "./model.js";
+import { mountReview } from "./review.js";
 import { renderCase } from "./view.js";
 const el = <T extends HTMLElement>(id: string) =>
   document.getElementById(id) as T;
@@ -28,9 +29,14 @@ function disconnect() {
   el("connection-status").textContent =
     "Disconnected. Enter your local API token to connect.";
 }
-async function read(path: string, signal: AbortSignal) {
+async function read(path: string, signal: AbortSignal, body?: unknown) {
   const response = await fetch(path, {
-    headers: { Authorization: `Bearer ${token}` },
+    method: body === undefined ? "GET" : "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...(body === undefined ? {} : { "Content-Type": "application/json" }),
+    },
+    body: body === undefined ? undefined : JSON.stringify(body),
     cache: "no-store",
     credentials: "omit",
     redirect: "error",
@@ -42,6 +48,10 @@ async function read(path: string, signal: AbortSignal) {
       "Authentication failed. Enter the configured local API token.",
     );
   }
+  if (response.status === 409)
+    throw new Error(
+      "Decision conflict or stale package. Reload the case and review the saved status before deciding again.",
+    );
   if (!response.ok)
     throw new Error(
       response.status === 404
@@ -68,6 +78,23 @@ async function detail(id: string) {
     if (generation !== epoch || selected !== id || controller.signal.aborted)
       return;
     renderCase(el("detail"), c);
+    mountReview(el("detail"), c, async (body) => {
+      // POST is never retried. A late result cannot restore a previous case/session.
+      const saved = (await read(
+        `/cases/${encodeURIComponent(id)}/decisions`,
+        controller.signal,
+        body,
+      )) as Case;
+      if (generation !== epoch || selected !== id || controller.signal.aborted)
+        return;
+      renderCase(el("detail"), saved);
+      mountReview(el("detail"), saved, async () => {});
+      el("detail").append(
+        text("p", "Decision recorded. Saved status shown above.", "success"),
+      );
+      el("refresh-case").onclick = () => void detail(id);
+      void queue();
+    });
     el("refresh-case").onclick = () => void detail(id);
   } catch (e) {
     if (controller.signal.aborted || generation !== epoch) return;
@@ -102,7 +129,7 @@ async function queue() {
     el("disconnect").hidden = false;
     el("workspace").hidden = false;
     el("connection-status").textContent =
-      "Connected · read-only evidence workspace · token held in memory";
+      "Connected · analyst review workspace · token held in memory";
     el("queue-status").textContent = data.items.length
       ? "Newest submissions first. Status filter applies before pagination."
       : "No cases match this queue. Submit cases using the existing API smoke demonstration.";

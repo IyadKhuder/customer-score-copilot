@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc && node build.mjs",
     "check": "tsc --noEmit",
-    "test": "npm run build && node --test test/controller.test.mjs test/view.test.mjs"
+    "test": "npm run build && node --test test/controller.test.mjs test/view.test.mjs test/review.test.mjs"
   },
   "devDependencies": {
     "linkedom": "0.18.12",
