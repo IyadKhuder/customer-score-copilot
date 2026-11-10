@@ -192,6 +192,10 @@ Recorded movements and selected demo-policy indications do not explain causes, e
 
 `EXPORT_MANIFEST.json` records the original migration export at commit `6586c3e`; later changes do not update that historical snapshot or its hashes.
 
+## Planned improvements
+
+- **Slack-to-web case creation (future work; implementation deferred):** let users submit a review case from Slack and receive a direct link to that case in the web UI, where an authenticated analyst examines the evidence and completes the review. Reuse the existing authenticated case API; keep API credentials out of Slack messages and case links. The link does not grant access or replace web authentication. Preliminary estimate: **6–10 hours**, potentially delivered as one consolidated patch plus deployment and verification. This is a planning estimate, not an implementation commitment or authorization. Continue the existing Phase 2 plan, starting with M3.5, before taking up the bridge. Automatic decision notifications back to Slack would be a separate enhancement.
+
 ## License
 
 Software and associated documentation are provided under the [MIT License](LICENSE). Third-party dependencies retain their own licenses.
