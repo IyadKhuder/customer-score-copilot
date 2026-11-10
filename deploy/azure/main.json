@@ -1,0 +1,256 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "prefix": {
+      "type": "string",
+      "defaultValue": "scorecopilot",
+      "minLength": 3,
+      "maxLength": 20
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "swedencentral",
+      "allowedValues": [
+        "swedencentral"
+      ]
+    },
+    "adminUsername": {
+      "type": "string",
+      "defaultValue": "copilotadmin"
+    },
+    "sshPublicKey": {
+      "type": "string",
+      "minLength": 50
+    },
+    "adminCidr": {
+      "type": "string",
+      "minLength": 9
+    },
+    "dnsLabel": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 63
+    },
+    "imageVersion": {
+      "type": "string",
+      "defaultValue": "24.04.202610250"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2023-11-01",
+      "name": "[parameters('prefix')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "ssh-owner",
+            "properties": {
+              "priority": 100,
+              "protocol": "Tcp",
+              "access": "Allow",
+              "direction": "Inbound",
+              "sourceAddressPrefix": "[parameters('adminCidr')]",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "destinationPortRange": "22"
+            }
+          },
+          {
+            "name": "http-acme",
+            "properties": {
+              "priority": 110,
+              "protocol": "Tcp",
+              "access": "Allow",
+              "direction": "Inbound",
+              "sourceAddressPrefix": "Internet",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "destinationPortRange": "80"
+            }
+          },
+          {
+            "name": "https-demo",
+            "properties": {
+              "priority": 120,
+              "protocol": "Tcp",
+              "access": "Allow",
+              "direction": "Inbound",
+              "sourceAddressPrefix": "Internet",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "destinationPortRange": "443"
+            }
+          }
+        ]
+      },
+      "tags": {
+        "project": "scorecopilot",
+        "module": "M3.4",
+        "usage": "on-demand-demo"
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2023-11-01",
+      "name": "[parameters('prefix')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "10.47.0.0/16"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "app",
+            "properties": {
+              "addressPrefix": "10.47.1.0/24"
+            }
+          }
+        ]
+      },
+      "tags": {
+        "project": "scorecopilot",
+        "module": "M3.4",
+        "usage": "on-demand-demo"
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2023-11-01",
+      "name": "[parameters('prefix')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publicIPAllocationMethod": "Static",
+        "publicIPAddressVersion": "IPv4",
+        "dnsSettings": {
+          "domainNameLabel": "[parameters('dnsLabel')]"
+        }
+      },
+      "sku": {
+        "name": "Standard"
+      },
+      "zones": [
+        "1"
+      ],
+      "tags": {
+        "project": "scorecopilot",
+        "module": "M3.4",
+        "usage": "on-demand-demo"
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2023-11-01",
+      "name": "[parameters('prefix')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('prefix'))]"
+        },
+        "ipConfigurations": [
+          {
+            "name": "primary",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('prefix'), 'app')]"
+              },
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('prefix'))]"
+              }
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('prefix'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('prefix'))]",
+        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('prefix'))]"
+      ],
+      "tags": {
+        "project": "scorecopilot",
+        "module": "M3.4",
+        "usage": "on-demand-demo"
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2024-03-01",
+      "name": "vm-scorecopilot-demo",
+      "location": "[parameters('location')]",
+      "zones": [
+        "1"
+      ],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', parameters('prefix'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_B2ls_v2"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "ubuntu-24_04-lts",
+            "sku": "server",
+            "version": "[parameters('imageVersion')]"
+          },
+          "osDisk": {
+            "name": "disk-scorecopilot-os",
+            "createOption": "FromImage",
+            "diskSizeGB": 32,
+            "caching": "ReadWrite",
+            "deleteOption": "Detach",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+            }
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "scorecopilot",
+          "adminUsername": "[parameters('adminUsername')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "provisionVMAgent": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+                  "keyData": "[parameters('sshPublicKey')]"
+                }
+              ]
+            }
+          }
+        },
+        "securityProfile": {
+          "securityType": "TrustedLaunch",
+          "uefiSettings": {
+            "secureBootEnabled": true,
+            "vTpmEnabled": true
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('prefix'))]",
+              "properties": {
+                "primary": true,
+                "deleteOption": "Detach"
+              }
+            }
+          ]
+        }
+      },
+      "tags": {
+        "project": "scorecopilot",
+        "module": "M3.4",
+        "usage": "on-demand-demo"
+      }
+    }
+  ]
+}

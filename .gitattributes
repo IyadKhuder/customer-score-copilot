@@ -1,3 +1,8 @@
 # Keep hashed source, policy and dataset bytes identical across OS checkouts.
 # This disables newline conversion; it does not disable normal text diffs.
 * -text
+
+# Deployment scripts must also work after a Windows checkout and SCP transfer.
+deploy/azure/*.sh text eol=lf
+deploy/azure/*.py text eol=lf
+deploy/azure/Caddyfile text eol=lf

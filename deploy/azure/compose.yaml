@@ -1,0 +1,35 @@
+# Separate cloud project: never merge this file into the local Compose project.
+name: scorecopilot-cloud
+services:
+  api:
+    image: ${COPILOT_IMAGE:?Set the locally built image tag}
+    env_file: /etc/scorecopilot/api.env
+    volumes:
+      - /srv/copilot/state:/app/var/api
+    ports:
+      - '127.0.0.1:8000:8000'
+    restart: 'no'
+    init: true
+    stop_grace_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: '5m'
+        max-file: '2'
+  proxy:
+    image: caddy:2
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:?Set the public IP FQDN returned by Azure}
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - /srv/copilot/caddy-data:/data
+      - /srv/copilot/caddy-config:/config
+    restart: 'no'
+    logging:
+      driver: json-file
+      options:
+        max-size: '5m'
+        max-file: '2'
