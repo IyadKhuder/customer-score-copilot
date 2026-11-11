@@ -7,6 +7,8 @@ from pathlib import Path
 import re
 import subprocess
 import time
+import tarfile
+import tempfile
 
 FILES = ('batch_scan.py', 'policy_decisions.py', 'temporal_policy.py',
          'case_application.py', 'review_workflow.py', 'review_graph.py')
@@ -44,6 +46,47 @@ def write_new(path, value):
         os.fsync(stream.fileno())
 
 
+def archive_config(path):
+    """Read one image config without extracting paths supplied by an archive."""
+    with tarfile.open(path) as archive:
+        entries = json.load(archive.extractfile('manifest.json'))
+        if len(entries) != 1:
+            raise ValueError('Expected exactly one image in the archive')
+        member = archive.getmember(entries[0]['Config'])
+        if not member.isfile() or member.size > 4 * 1024 * 1024:
+            raise ValueError('Invalid image configuration member')
+        data = archive.extractfile(member).read()
+        config = json.loads(data)
+        return 'sha256:' + hashlib.sha256(data).hexdigest(), config
+
+
+def load_verified_image(directory, manifest):
+    archive = directory / 'app-image.tar'
+    expected_config, _ = archive_config(archive)
+    declared_config = manifest.get('config_id', manifest['image_id'])
+    if expected_config != declared_config:
+        raise ValueError('Archive configuration identity differs from release record')
+    output = command('docker', 'load', '--input', str(archive))
+    print(output)
+    loaded = re.findall(r'^Loaded image ID: (sha256:[a-f0-9]{64})$', output, re.MULTILINE)
+    if len(loaded) != 1:
+        raise ValueError('Expected exactly one loaded image ID; inspect load output')
+    info = inspect(loaded[0])
+    if info['Id'] != loaded[0]:
+        raise ValueError('Loaded image identity changed during inspection')
+    # Engine 20 classic store IDs identify configs; Engine 29 containerd IDs can
+    # identify manifests. Re-export the host object and verify its CONFIG bytes,
+    # which also bind the ordered root filesystem diff_ids. Never trust a label
+    # or the load console ID alone. No container or primary state is modified.
+    with tempfile.TemporaryDirectory(prefix='copilot-image-check-') as temporary:
+        exported = Path(temporary) / 'host-image.tar'
+        command('docker', 'save', '--output', str(exported), info['Id'])
+        actual_config, _ = archive_config(exported)
+    if actual_config != expected_config:
+        raise ValueError('Host image configuration differs from verified archive')
+    return info, expected_config
+
+
 def pack(image, output):
     root = Path(__file__).resolve().parents[2]
     # Refuse uncommitted tracked source; unrelated ignored/untracked diagnostics stay local.
@@ -65,14 +108,17 @@ def pack(image, output):
     output.mkdir(parents=True, exist_ok=False)
     archive = output / 'app-image.tar'
     command('docker', 'save', '--output', str(archive), info['Id'])
-    write_new(output / 'release.json', dict(schema=1, source_commit=commit,
+    config_id, _ = archive_config(archive)
+    write_new(output / 'release.json', dict(schema=2, source_commit=commit, config_id=config_id,
               image_id=info['Id'], archive_sha256=checksum(archive), implementation=hashes))
     print('Release exported:', commit, info['Id'])
 
 
 def validate(value):
-    if value.get('schema') != 1 or not IMAGE.fullmatch(value.get('image_id', '')):
+    if value.get('schema') not in (1, 2) or not IMAGE.fullmatch(value.get('image_id', '')):
         raise ValueError('Invalid release identity')
+    if value['schema'] == 2 and not IMAGE.fullmatch(value.get('config_id', '')):
+        raise ValueError('Invalid configuration identity')
     if not re.fullmatch(r'[a-f0-9]{40}', value.get('source_commit', '')):
         raise ValueError('Invalid source commit')
     if not re.fullmatch(r'[a-f0-9]{64}', value.get('archive_sha256', '')):
@@ -124,8 +170,7 @@ def deployment_plan(directory, previous_api, previous_proxy):
         raise ValueError('Activation receipt exists; inspect it before another deployment')
     if checksum(directory / 'app-image.tar') != manifest['archive_sha256']:
         raise ValueError('Archive checksum mismatch')
-    command('docker', 'load', '--input', str(directory / 'app-image.tar'))
-    info = inspect(manifest['image_id'])
+    info, config_id = load_verified_image(directory, manifest)
     if info['Architecture'] != 'amd64' or info['Os'] != 'linux':
         raise ValueError('Expected linux/amd64 image')
     if (info.get('Config', {}).get('Labels') or {}).get('org.opencontainers.image.revision') != manifest['source_commit']:
@@ -134,7 +179,8 @@ def deployment_plan(directory, previous_api, previous_proxy):
         raise ValueError('Loaded image fingerprints differ from manifest')
     if fingerprints(previous_api) != manifest['implementation']:
         raise ValueError('Implementation changed; explicit compatibility work required')
-    return dict(source_commit=manifest['source_commit'],
+    return dict(source_commit=manifest['source_commit'], source_image_id=manifest['image_id'],
+                host_image_id=info['Id'], config_id=config_id,
                 previous=override(previous_api, previous_proxy),
                 candidate=override(info['Id'], previous_proxy))
 

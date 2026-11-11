@@ -8,6 +8,8 @@ import unittest
 from unittest.mock import patch
 from urllib.error import HTTPError, URLError
 import tempfile
+import tarfile
+import hashlib
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -141,12 +143,12 @@ class ReleaseFailureTests(unittest.TestCase):
             previous, proxy = 'sha256:' + 'e' * 64, 'sha256:' + 'f' * 64
             info = dict(Id=manifest['image_id'], Architecture='amd64', Os='linux',
                         Config={'Labels': {'org.opencontainers.image.revision': manifest['source_commit']}})
-            with patch.object(release, 'command'), patch.object(release, 'inspect', return_value=info), \
+            with patch.object(release, 'load_verified_image', return_value=(info, manifest['image_id'])), \
                     patch.object(release, 'fingerprints', return_value=manifest['implementation']):
                 receipt = release.deployment_plan(directory, previous, proxy)
                 self.assertEqual(receipt['previous'], release.override(previous, proxy))
                 self.assertEqual(receipt['candidate'], release.override(manifest['image_id'], proxy))
-            with patch.object(release, 'command'), patch.object(release, 'inspect', return_value=info), \
+            with patch.object(release, 'load_verified_image', return_value=(info, manifest['image_id'])), \
                     patch.object(release, 'fingerprints', side_effect=[manifest['implementation'], {}]):
                 with self.assertRaisesRegex(ValueError, 'Implementation changed'):
                     release.deployment_plan(directory, previous, proxy)
@@ -162,6 +164,77 @@ class ReleaseFailureTests(unittest.TestCase):
                 release.rollback_plan(receipt, candidate)
         with patch.object(release, 'fingerprints', return_value={}), patch.object(release, 'inspect'):
             self.assertEqual(release.rollback_plan(receipt, candidate), release.override(previous, proxy))
+
+
+class ImageStoreCompatibilityTests(unittest.TestCase):
+    def archive(self, path, config=None, entries=1):
+        config = config or {'os': 'linux', 'architecture': 'amd64',
+                            'rootfs': {'type': 'layers', 'diff_ids': ['sha256:' + 'd' * 64]}}
+        data = json.dumps(config).encode()
+        digest = 'sha256:' + hashlib.sha256(data).hexdigest()
+        with tarfile.open(path, 'w') as archive:
+            for name, body in [('manifest.json', json.dumps([{'Config': 'config.json'}] * entries).encode()),
+                               ('config.json', data)]:
+                member = tarfile.TarInfo(name)
+                member.size = len(body)
+                archive.addfile(member, io.BytesIO(body))
+        return digest
+
+    def exercise(self, host_same=False, changed=False, bad_output=False):
+        with tempfile.TemporaryDirectory() as name:
+            folder = Path(name)
+            config_id = self.archive(folder / 'app-image.tar')
+            host_id = config_id if host_same else 'sha256:' + 'f' * 64
+            info = dict(Id=host_id)
+            def command(*args):
+                if args[1] == 'load':
+                    return 'Loaded image ID: ' + host_id if not bad_output else 'Loaded image: unexpected:tag'
+                self.assertEqual(args[1], 'save')
+                self.assertEqual(args[-1], host_id)
+                self.archive(Path(args[3]), {'rootfs': {'diff_ids': []}} if changed else None)
+                return ''
+            with patch.object(release, 'command', side_effect=command), \
+                    patch.object(release, 'inspect', return_value=info):
+                return release.load_verified_image(folder, dict(image_id=config_id))
+
+    def test_classic_same_id_and_containerd_different_id_preserve_config(self):
+        for same in (True, False):
+            info, config_id = self.exercise(host_same=same)
+            self.assertTrue(info['Id'].startswith('sha256:'))
+            self.assertEqual(info['Id'] == config_id, same)
+
+    def test_changed_host_rootfs_config_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, 'Host image configuration differs'):
+            self.exercise(changed=True)
+
+    def test_unexpected_load_response_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, 'exactly one loaded image ID'):
+            self.exercise(bad_output=True)
+
+    def test_archive_config_mismatch_stops_before_docker(self):
+        with tempfile.TemporaryDirectory() as name:
+            folder = Path(name)
+            self.archive(folder / 'app-image.tar')
+            with patch.object(release, 'command') as command:
+                with self.assertRaisesRegex(ValueError, 'Archive configuration identity differs'):
+                    release.load_verified_image(folder, dict(image_id='sha256:' + '0' * 64))
+                command.assert_not_called()
+
+    def test_multiple_images_refused(self):
+        with tempfile.TemporaryDirectory() as name:
+            archive = Path(name) / 'image.tar'
+            self.archive(archive, entries=2)
+            with self.assertRaisesRegex(ValueError, 'exactly one image'):
+                release.archive_config(archive)
+
+    def test_schema_two_separates_source_image_and_config(self):
+        manifest = dict(schema=2, source_commit='a' * 40, image_id='sha256:' + 'b' * 64,
+                        config_id='sha256:' + 'c' * 64, archive_sha256='e' * 64,
+                        implementation={n: 'd' * 64 for n in release.FILES})
+        self.assertEqual(release.validate(manifest), manifest)
+        del manifest['config_id']
+        with self.assertRaisesRegex(ValueError, 'Invalid configuration identity'):
+            release.validate(manifest)
 
 
 if __name__ == '__main__':

@@ -241,3 +241,39 @@ final commit/push/CI evidence exist. Backups remain manual; this is one VM, one
 worker and a shared analyst token, not high availability or signed supply-chain
 attestation. Deployment commands and compatibility checks are bounded in scope;
 no claim of universal crash safety is made.
+
+## Image-store compatibility correction — 10 November 2026
+
+Owner testing of candidate d1e8703 exposed an incorrect portability assumption:
+Windows Engine 20 exported configuration ID eafe6484..., while hosted Engine
+29.9.3 loaded it as host image ID 1c05dafb.... The archive's raw configuration
+SHA256, linux/amd64 platform and Git revision matched the original candidate.
+The original application remained running; activation stopped before receipt or
+Compose replacement. No manifest was manually edited and no guard deleted images.
+
+The corrected tool verifies the archive checksum, reads its single image config,
+checks the declared config identity and displays Docker load output. It resolves
+the actual loaded host ID, re-exports that exact host object to a temporary archive
+and requires the raw configuration hash to match. The config binds ordered rootfs
+diff_ids. It still checks platform, revision and six implementation fingerprints
+before writing the activation receipt or replacing containers. The host export
+adds temporary disk I/O and roughly one image archive of disk space; it is removed
+on normal exit and exceptions. A forced process/VM interruption may leave a
+copilot-image-check-* directory under the host temp directory; inspect before
+removing that named temporary artifact. Do not prune Docker images.
+
+Existing schema-1 releases from the classic store remain valid without changes.
+New packaging emits schema 2 with a separate config_id, allowing newer source
+stores to use a different source image ID too. Activation receipts retain source
+image ID, verified config ID and actual host image ID. Compose and rollback use
+host IDs. This is a transport compatibility fix, not a new application image,
+schema migration or weakened image-identity check.
+
+Apply the correction against committed d1e8703; run its 15 standard-library tests.
+Upload only the corrected release.py to the already installed host path, then
+rerun release.py deploy with the EXISTING release directory. Do not repeat the
+initial directory move or regenerate release.json. That existing candidate still
+correctly identifies its original d1e8703 source. Commit the tool/test/docs fix
+separately and record both commits during closure. The first activation attempt
+was unsuccessful and must remain in the verification history. Live corrected
+Docker activation and public/saved-case checks remain owner-run gates.
