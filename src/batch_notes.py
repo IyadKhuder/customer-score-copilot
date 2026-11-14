@@ -17,7 +17,11 @@ SCOPES = {
 }
 
 
-def _validate_scan(report, root):
+def _read_policy_snapshot(root):
+    return {p.name: p.read_bytes() for p in sorted((root / 'policy_memos').glob('*.md'))}
+
+
+def _validate_scan(report, root, *, policy_snapshot=None):
     """Refuse changed calculations or policy bytes before any provider request."""
     request = validate_request(report['request'])
     if report.get('run_status') not in ('completed', 'completed_with_errors'):
@@ -25,9 +29,11 @@ def _validate_scan(report, root):
     results = report['results']
     if [r['account_id'] for r in results] != request['account_ids']:
         raise ValueError('Scan account set/order mismatch')
+    if policy_snapshot is None:
+        policy_snapshot = _read_policy_snapshot(root)
     for policy, expected in report['source']['policy_sha256'].items():
-        paths = list((root / 'policy_memos').glob(policy + '_*.md'))
-        if len(paths) != 1 or hashlib.sha256(paths[0].read_bytes()).hexdigest() != expected:
+        matches = [body for name, body in policy_snapshot.items() if name.startswith(policy + '_')]
+        if len(matches) != 1 or hashlib.sha256(matches[0]).hexdigest() != expected:
             raise ValueError('Policy snapshot changed; rescan before generating notes')
     if set(report['source']['policy_sha256']) != {'POL-002','POL-004','POL-005','POL-007'}:
         raise ValueError('Missing policy provenance')
@@ -47,13 +53,18 @@ def _validate_scan(report, root):
     return request
 
 
-def _tools(rows, account, period, policy_root):
+def _tools(rows, account, period, policy_root, *, policy_snapshot=None):
     from src.score_tools import TOOL_SCHEMAS
-    from src.retriever import RETRIEVER_TOOL_SCHEMA, load_all_chunks, build_index, retrieve
+    from src.retriever import RETRIEVER_TOOL_SCHEMA, _chunk_markdown, build_index, retrieve
     from src.policy_assist_suite import SUITE_TOOL_SCHEMA, build_suite_assist_dispatch
     frozen = copy.deepcopy(rows)
     passages = []
-    chunks = load_all_chunks(str(policy_root / 'policy_memos'))
+    if policy_snapshot is None:
+        policy_snapshot = _read_policy_snapshot(policy_root)
+    chunks = []
+    for name, body in policy_snapshot.items():
+        text = body.decode('utf-8').replace('\r\n', '\n').replace('\r', '\n')
+        chunks.extend(_chunk_markdown(text, name))
     vectorizer, matrix = build_index(chunks)
 
     def history(*, account_id):
@@ -94,7 +105,9 @@ def add_verified_notes(report, client, budget, *, adapter_kind, max_notes=2,
         raise ValueError('A fresh RequestBudget is required')
     if adapter_kind not in ('openai_compatible','anthropic'):
         raise ValueError('Unknown adapter kind')
-    request = _validate_scan(report, Path(source_root))
+    root = Path(source_root)
+    policy_snapshot = _read_policy_snapshot(root)
+    request = _validate_scan(report, root, policy_snapshot=policy_snapshot)
     from src import agent
     from src.policy_assist_suite import SUITE_PROMPT_APPENDICES
     out = copy.deepcopy(report)
@@ -127,7 +140,10 @@ def add_verified_notes(report, client, budget, *, adapter_kind, max_notes=2,
             note.update(claim_scope=scope, evidence_sha256=_sha(rows),
                         scope_description='Verified score, bin, warning status and consecutive-decline events only; consult scan for other review indications.')
             try:
-                schemas, dispatch, passages = _tools(rows, result['account_id'], request['as_of_period'], Path(source_root))
+                schemas, dispatch, passages = _tools(
+                    rows, result['account_id'], request['as_of_period'], root,
+                    policy_snapshot=policy_snapshot,
+                )
                 question = (
                     f"Produce a verified case note for account {result['account_id']} at "
                     f"{request['as_of_period']}, market 1. Use get_history, evaluate_policy_signals "
@@ -162,8 +178,10 @@ def add_verified_notes(report, client, budget, *, adapter_kind, max_notes=2,
     finally:
         client.client = original_client
     out['notes'] = dict(note_run_id=str(uuid4()), created_at_utc=datetime.now(timezone.utc).isoformat(),
-        scan_input_sha256=report['source'].get('input_sha256'), policy_sha256={p.name:hashlib.sha256(p.read_bytes()).hexdigest()
-        for p in sorted((Path(source_root) / 'policy_memos').glob('POL-*.md'))},
+        scan_input_sha256=report['source'].get('input_sha256'), policy_sha256={
+            name: hashlib.sha256(body).hexdigest() for name, body in policy_snapshot.items()
+        },
+        retrieval_method='stemmed_tfidf', policy_version='v1.0',
         max_notes=max_notes, attempted_count=attempted,
         outcomes={s:sum(r['narrative']['status']==s for r in out['results'])
                   for s in ('published','blocked','failed','not_requested')},
