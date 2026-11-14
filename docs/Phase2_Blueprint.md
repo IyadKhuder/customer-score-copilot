@@ -220,3 +220,19 @@ explicit retention/reset limits, not persisted historical telemetry. Historical
 active analyzer timings cannot be reconstructed. A reproducible isolated benchmark
 measures HTTP submission through worker completion/readback; it does not make
 claims about hosted throughput or live-model quality.
+
+## M4.2 closure preparation — 14 November 2026
+
+M4.1 is complete at owner-confirmed `0615844`, pushed with GitHub Actions Success.
+Owner Windows results: 1,700 passed, one platform-related symlink skip, 169 subtests;
+frontend 20 checks; isolated benchmark 10/10 expected outcomes. Local Docker,
+operational dashboard, disconnect/reconnect clearing and saved-package hash
+preservation were verified. This updates status, not the historical preparation
+notes in the M4.1 guide.
+
+M4.2 standalone purpose, architecture, quick start and limits are in
+`CASE_REVIEW.md`; repeatable local review/decision/restart/hold steps and pending
+closure gates are in `Phase2_M4_2_Final_Review_and_Demo.md`. No runtime feature,
+Slack bridge, repository extraction, Azure session or new hours are included.
+M4.2 remains pending owner verification, commit/push and CI. Select the standalone
+name and plan physical repository separation after closure.

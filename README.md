@@ -8,6 +8,22 @@ Customer Score Copilot brings constrained database tools and policy retrieval in
 
 **Note:** This is a portfolio and learning project built entirely on independently generated synthetic data. All accounts, score histories and demonstration scenarios are fictional; no real customer records or proprietary datasets are used. The policy rules are also independently invented for this demonstration. The project illustrates evidence-based review workflows; it is not a production credit-decision system.
 
+## Two related portfolio projects
+
+This repository currently contains two independently usable applications. Repository
+separation follows M4.2 closure; the case-review application's name is still open.
+
+| Application | Input and runtime | Start here |
+| --- | --- | --- |
+| Slack/RAG copilot | Bounded English requests, score tools, policy retrieval and optional verified LLM notes | Slack walkthrough below |
+| Case-review application | Structured requests, deterministic analysis, LangGraph durable orchestration, FastAPI, SQLite and human decisions | [Standalone guide](docs/CASE_REVIEW.md) and [repeatable local demo](docs/Phase2_M4_2_Final_Review_and_Demo.md) |
+
+The case-review application runs without Slack or provider credentials. It includes
+frozen evidence, approve/reject controls, operational measurements and demonstrated
+Azure delivery/recovery. Live LLM notes are disabled in this runtime; it performs no
+autonomous LLM investigation. Approval accepts a saved demonstration package and
+authorizes no credit action. Azure is on demand and currently deallocated.
+
 ## See it in Slack
 
 ### A sharp drop followed by partial recovery
@@ -173,7 +189,7 @@ Expect a committee-review indication for the planted severe drop and six scripte
 
 The owner confirmed a clean working tree and successful hosted CI for checkpoint **`2f23a2e`** on 2026-10-28. The CI matrix covers Windows/Linux and Python 3.11/3.12. Offline regression tests use fake Slack/provider clients; actual Slack captures provide separate integration demonstrations.
 
-The app currently runs through a **local listener**, including demonstrated access by another workspace member. It is not an always-on deployment. A server could host the listener, but production use would require operational work such as secret management, process supervision, monitoring, durable event handling and a review of authorization and data governance.
+The Slack application currently runs through a **local listener**, including demonstrated access by another workspace member. It is not an always-on deployment. A server could host the listener, but production use would require operational work such as secret management, process supervision, monitoring, durable event handling and a review of authorization and data governance.
 
 Recorded movements and selected demo-policy indications do not explain causes, establish formal reinstatement, confirm operational warning registration or clearance, or authorize credit decisions.
 
@@ -194,12 +210,17 @@ Recorded movements and selected demo-policy indications do not explain causes, e
 
 ## Planned improvements
 
-- **Slack-to-web case creation (future work; implementation deferred):** let users submit a review case from Slack and receive a direct link to that case in the web UI, where an authenticated analyst examines the evidence and completes the review. Reuse the existing authenticated case API; keep API credentials out of Slack messages and case links. The link does not grant access or replace web authentication. Preliminary estimate: **6–10 hours**, potentially delivered as one consolidated patch plus deployment and verification. This is a planning estimate, not an implementation commitment or authorization. Continue the existing Phase 2 plan, starting with M3.5, before taking up the bridge. Automatic decision notifications back to Slack would be a separate enhancement.
+- **Slack-to-web case creation (future work; implementation deferred):** let users submit a review case from Slack and receive a direct link to that case in the web UI, where an authenticated analyst examines the evidence and completes the review. Reuse the existing authenticated case API; keep API credentials out of Slack messages and case links. The link does not grant access or replace web authentication. Preliminary estimate: **6–10 hours**, potentially delivered as one consolidated patch plus deployment and verification. This is a planning estimate, not an implementation commitment or authorization. Finish M4.2 closure and subsequent repository separation before considering this optional integration between the two independent projects. Automatic decision notifications back to Slack would be a separate enhancement.
 
 ## License
 
 Software and associated documentation are provided under the [MIT License](LICENSE). Third-party dependencies retain their own licenses.
 
-### Phase 2 case queue and evidence view
+### Standalone case-review application
 
-M3.2 adds a read-only TypeScript interface at `http://127.0.0.1:8000/` when the frontend has been built (automatically in Docker). It shows server-filtered cases, separate workflow/verification/decision statuses, frozen score trajectories, coverage gaps, captured policies and package limitations. Enter the local API bearer token at runtime; it is kept only in page memory. See [the M3.2 guide](docs/Phase2_M3_2_Case_Queue_and_Evidence.md) for architecture, build commands and verification gates. Analyst decision controls remain M3.3.
+See [purpose, architecture, quick start and limits](docs/CASE_REVIEW.md).
+The web UI supports authenticated queue/evidence inspection, version-bound
+approve/reject decisions and manual operational refresh. Cases are submitted through
+the structured API or existing submission tools; the UI has no case-creation form.
+The [M4.2 demo](docs/Phase2_M4_2_Final_Review_and_Demo.md) covers human review and
+saved-package preservation locally without starting Azure.
