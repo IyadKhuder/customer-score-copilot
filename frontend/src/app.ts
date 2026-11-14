@@ -1,3 +1,4 @@
+import { renderOperations, Operations } from "./operations.js";
 import { Case, text } from "./model.js";
 import { mountReview } from "./review.js";
 import { renderCase } from "./view.js";
@@ -7,6 +8,7 @@ let token = "",
   offset = 0,
   epoch = 0,
   selected = "";
+let operationsRequest: AbortController | undefined;
 let queueRequest: AbortController | undefined,
   detailRequest: AbortController | undefined;
 const size = 20;
@@ -15,6 +17,8 @@ function disconnect() {
   epoch++;
   queueRequest?.abort();
   detailRequest?.abort();
+  operationsRequest?.abort();
+  el("operations").replaceChildren();
   selected = "";
   offset = 0;
   el("queue").replaceChildren();
@@ -196,4 +200,21 @@ el("previous").onclick = () => {
 el("next").onclick = () => {
   offset += size;
   void queue();
+};
+
+el("refresh-operations").onclick = async () => {
+  if (!token) return;
+  operationsRequest?.abort();
+  const controller = new AbortController();
+  operationsRequest = controller;
+  const generation = epoch;
+  el("operations").replaceChildren(text("p", "Loading operational measurements…"));
+  try {
+    const data = await read("/operations", controller.signal) as Operations;
+    if (controller.signal.aborted || generation !== epoch) return;
+    renderOperations(el("operations"), data);
+  } catch (e) {
+    if (controller.signal.aborted || generation !== epoch) return;
+    el("operations").replaceChildren(text("p", error(e), "error"));
+  }
 };

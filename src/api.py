@@ -9,6 +9,10 @@ import re
 import sqlite3
 from typing import Literal
 from uuid import UUID
+from time import perf_counter
+
+from src.operations import Timings, operational_summary
+from src.measured_application import MeasuredApplication
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, Response
 from fastapi.exceptions import RequestValidationError
@@ -20,7 +24,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from src.batch_scan import ROOT, validate_request
-from src.case_application import CaseApplication, MissingCase, projection
+from src.case_application import MissingCase, projection
 from src.review_workflow import TransitionError
 
 
@@ -99,10 +103,12 @@ def create_app(*, store_path=None, scores_path=None, source_root=ROOT, token=Non
     if path == scores:
         raise ValueError('Case store must be separate from the score database')
 
+    timings = Timings()
+
     @asynccontextmanager
     async def lifespan(app):
         with single_process(path):
-            application = CaseApplication(path, scores, source_root)
+            application = MeasuredApplication(path, scores, source_root, timings=timings)
             app.state.application = application
             if start_worker:
                 application.start()
@@ -140,6 +146,20 @@ def create_app(*, store_path=None, scores_path=None, source_root=ROOT, token=Non
             "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; "
             "img-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'")
         return response
+
+    @app.middleware('http')
+    async def request_timing(request: Request, call_next):
+        started = perf_counter()
+        status = '5xx'
+        try:
+            response = await call_next(request)
+            status = str(response.status_code // 100) + 'xx'
+            return response
+        finally:
+            route = request.scope.get('route')
+            template = getattr(route, 'path', '')
+            timings.record('request', request.method + ' ' + template,
+                           (perf_counter() - started) * 1000, status)
 
     @app.exception_handler(RequestValidationError)
     async def invalid(request, exc):
@@ -205,6 +225,10 @@ def create_app(*, store_path=None, scores_path=None, source_root=ROOT, token=Non
             raise HTTPException(503, 'Source snapshot unavailable') from None
         response.headers['Location'] = '/cases/' + case['case_id']
         return projection(case)
+
+    @app.get('/operations', dependencies=[Depends(analyst)])
+    def operations(service=Depends(application)):
+        return operational_summary(service.store, timings)
 
     @app.get('/cases', dependencies=[Depends(analyst)])
     def cases(limit: int = Query(50, ge=1, le=100), offset: int = Query(0, ge=0, le=100000),

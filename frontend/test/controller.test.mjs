@@ -180,3 +180,28 @@ test("review controller posts exact package, refreshes statuses, handles conflic
     /Decision recorded/,
   );
 });
+
+test("operations refresh uses authentication and discards late private results after disconnect", async () => {
+  const { document } = parseHTML(readFileSync(new URL("../index.html", import.meta.url), "utf8"));
+  globalThis.document = document;
+  let late, observed;
+  globalThis.fetch = async (path, options) => {
+    if (path === "/operations") {
+      observed = options;
+      return new Promise(resolve => { late = resolve; });
+    }
+    return {status: 200, ok: true, json: async () => ({items: [], has_more: false})};
+  };
+  await import("../dist/app.js?operations-controller");
+  document.getElementById("token").value = "private-operations-token";
+  document.getElementById("connect").onsubmit({preventDefault() {}});
+  await flush(); await flush();
+  const pending = document.getElementById("refresh-operations").onclick();
+  await flush();
+  assert.equal(observed.headers.Authorization, "Bearer private-operations-token");
+  assert.equal(observed.cache, "no-store");
+  document.getElementById("disconnect").onclick();
+  late({status: 200, ok: true, json: async () => ({private: "must never render"})});
+  await pending;
+  assert.equal(document.getElementById("operations").textContent, "");
+});

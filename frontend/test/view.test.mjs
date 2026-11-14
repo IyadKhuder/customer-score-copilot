@@ -62,3 +62,25 @@ test("empty history has explicit absence, no invented chart", () => {
   assert.equal(root.querySelector("svg"), null);
   assert.match(root.textContent, /No captured observations/);
 });
+
+test("operational view labels waiting, missing values and retained sample scope", async () => {
+  const { renderOperations } = await import("../dist/operations.js");
+  const { document } = parseHTML("<main></main>");
+  globalThis.document = document;
+  const root = document.querySelector("main");
+  const stats = {eligible: 1, measured: 0, missing: 1, median_ms: null, p95_ms: null};
+  renderOperations(root, {
+    window_start: "2026-11-13", window_end: "2026-11-14", cases_total: 1,
+    current_counts: {awaiting_review: 1}, submissions_in_window: 0,
+    failure_rate: {numerator: 0, denominator: 0, value: null},
+    reason_counts: {}, lifecycle: {processing_elapsed: stats, review_wait_open: stats},
+    lifecycle_scope: "Wall clock; excludes analyst waiting from processing",
+    timings: {collection_started_at: "2026-11-14", window_start: "2026-11-14", window_end: "2026-11-14",
+      oldest_retained_at: null, retained_samples: 0, evicted_since_start: 0, scope: "Retained process-local samples", groups: []},
+    provider: {reason: "<script>not markup</script>"},
+  });
+  assert.match(root.textContent, /Analyst waiting/);
+  assert.match(root.textContent, /Unavailable/);
+  assert.match(root.textContent, /not full traffic totals/);
+  assert.equal(root.querySelector("script"), null);
+});
