@@ -1,4 +1,4 @@
-name: Offline regression
+name: Slack copilot offline regression
 
 on:
   push:

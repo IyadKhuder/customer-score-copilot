@@ -22,3 +22,6 @@ var/
 
 # Never import an old base-data file into the clean project
 data/scores.csv
+
+# Keep owner-local Azure diagnostics out of Slack-only commits.
+/docs/Azure_*

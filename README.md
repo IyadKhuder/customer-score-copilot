@@ -8,17 +8,22 @@ Customer Score Copilot brings constrained database tools and policy retrieval in
 
 **Note:** This is a portfolio and learning project built entirely on independently generated synthetic data. All accounts, score histories and demonstration scenarios are fictional; no real customer records or proprietary datasets are used. The policy rules are also independently invented for this demonstration. The project illustrates evidence-based review workflows; it is not a production credit-decision system.
 
-## Next: Phase 2 (in progress)
+## Related standalone project
 
-**LangGraph** orchestrates the persistent analyst review prototype. It uses **SQLite checkpoints** to save where a case is in the workflow, pause for human review, and resume after a process restart. An analyst decision is recorded against the exact saved review package, so resuming the workflow does not rerun the analysis or apply a decision to a stale package.
+[Score Evidence Review](https://github.com/IyadKhuder/score-evidence-review) is the
+related, independently installed case-review application. It accepts structured
+requests and combines deterministic analysis, LangGraph durable orchestration,
+FastAPI, SQLite, frozen evidence and human decisions. Its runtime has live notes
+disabled and performs no autonomous LLM investigation. Approval accepts a synthetic
+review package and authorizes no credit action.
 
-**Retrieval evaluation** compares **TF-IDF**, **MiniLM embeddings**, and **hybrid reciprocal rank fusion** on a fixed, held-out question set. All three retrieved the labeled evidence in the top three on this benchmark. The frozen-note workflow uses TF-IDF and binds retrieved evidence to the same policy snapshot recorded in the note's provenance.
+The original Phase 2 work is complete and its history remains on
+[the preserved development branch](https://github.com/IyadKhuder/customer-score-copilot/tree/phase2/persistent-review-workflow).
+Earlier retrieval and provider/agent-role experiments remain historical experiments,
+distinct from the standalone application runtime. This Slack project installs and
+runs without that repository, FastAPI, LangGraph or a web server.
 
-**Planned next** are an **HTTP API** for submitting cases, checking status, and recording analyst decisions, plus **Docker** packaging for a reproducible local deployment. Later work includes a web interface for the analyst queue and case review, hosting, and operational monitoring.
-
-- [Follow Phase 2 development](https://github.com/IyadKhuder/customer-score-copilot/tree/phase2/persistent-review-workflow)
-- [Explore the LangGraph workflow](https://github.com/IyadKhuder/customer-score-copilot/blob/phase2/persistent-review-workflow/docs/Phase2_M1_1_LangGraph.md)
-- [Read the retrieval evaluation and selection](https://github.com/IyadKhuder/customer-score-copilot/blob/0831c2f/docs/Phase2_M2_2_Retriever_Selection.md)
+See [separation provenance and verification](docs/STANDALONE_SEPARATION.md).
 
 ## See it in Slack
 
@@ -210,9 +215,16 @@ Recorded movements and selected demo-policy indications do not explain causes, e
 | --- | --- |
 | Slack demo | **Python**, **pandas**, **SQLite and SQL**, **Slack Bolt and Socket Mode**, **Matplotlib** |
 | LLM and retrieval | **Gemini and Anthropic adapters**, **tool calling**, **retrieval-augmented generation (RAG)**, **scikit-learn TF-IDF**, **structured outputs**, **deterministic claim verification** |
-| Phase 2 implemented | **LangGraph** with SQLite checkpointing and human-in-the-loop review, **MiniLM with ONNX Runtime** for embedding experiments, **hybrid rank fusion**, **held-out retrieval evaluation** |
 | Testing and delivery | **pytest**, **Git**, **GitHub Actions** with Windows and Linux regression tests |
-| Phase 2 planned | **HTTP API design**, **Docker**, **web UI development**, **deployment and monitoring** |
+
+## Planned improvements
+
+Slack-to-web case creation remains optional future integration with Score Evidence
+Review and is not implemented. A future authenticated analyst could follow a case
+link returned in Slack; credentials must never appear in messages or links. Links
+would not grant access. The earlier 6–10 hour estimate is historical planning only,
+not a new allocation or authorization. Automatic decision notifications would be a
+separate enhancement.
 
 ## License
 
