@@ -69,3 +69,11 @@ Slack SDK imports passed; FastAPI and LangGraph are absent from this environment
 No live Slack or provider calls, Windows execution, PowerShell execution, new
 GitHub CI or Azure operation was performed by the assistant. Exact patch hashes
 are supplied in the delivery inventory; these are uncommitted preparation results.
+
+## Closure update — 15 November 2026
+
+M5.1 functional verification is complete. Owner Windows checks, both independent
+CI results, fresh Slack smoke and case-review Operations/disconnect/reconnect
+observations are reconciled in [the closure record](M5_1_Closure_2026-11-15.md).
+Earlier pending statements above describe preparation-time status and are
+superseded by that dated record. Original extraction hashes remain unchanged.
